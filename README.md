@@ -1,3 +1,4 @@
-# My Awesome Book
+#### 作者简介
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+ auther: sampsonguo
+ wechat: +8618128867441
