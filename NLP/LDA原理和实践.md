@@ -19,12 +19,12 @@
   ![Local Image](../gitbook/images/LDA原理和实践/图片9.png)<br>
 * 参数估计：统计<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片100.png)<br>
-* 参数估计：统计<br>
+* 参数估计：似然<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片101.png)<br>
-* 参数估计：统计<br>
+* 参数估计：后验<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片102.png)<br>
-* 参数估计：统计<br>
+* 参数估计：贝叶斯<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片103.png)<br>
-* 参数估计：统计<br>
+* 参数估计：对比<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片104.png)<br>
 
