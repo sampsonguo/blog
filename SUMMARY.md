@@ -2,7 +2,7 @@
 
 * [1. **推荐系统**]()
   * [1.1. **推荐系统中的相似性探讨**](rec-sys/推荐系统中的相似性探讨.md)
-  * [1.2. **LDA原理和实践**](nlp/LDA原理和实践.md)
+  * [1.2. **LDA原理和实践**](NLP/LDA原理和实践.md)
 * [2. **数据挖掘**]()
   * [2.1. **异常点检测算法**](dm/异常点检测算法.md)
   * [2.2. **DensityPeaksClustering**](dm/DensityPeaksClustering.md)
