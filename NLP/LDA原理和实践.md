@@ -7,12 +7,24 @@
   * 概率表示<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片2.png)<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片3.png)<br>
-* Unigram Model<br>
+* 演进：Unigram Model<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片4.png)<br>
-* Bayes Unigram Model<br>
+* 演进：Bayes Unigram Model<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片5.png)<br>
-* PLSA<br>
+* 演进：PLSA<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片6.png)<br>
   ![Local Image](../gitbook/images/LDA原理和实践/图片7.png)<br>
-
+* 演进：LDA<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片8.png)<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片9.png)<br>
+* 参数估计：统计<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片100.png)<br>
+* 参数估计：统计<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片101.png)<br>
+* 参数估计：统计<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片102.png)<br>
+* 参数估计：统计<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片103.png)<br>
+* 参数估计：统计<br>
+  ![Local Image](../gitbook/images/LDA原理和实践/图片104.png)<br>
 
