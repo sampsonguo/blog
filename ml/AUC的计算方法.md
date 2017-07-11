@@ -23,6 +23,7 @@ auc=“测试任意给一个正类样本和一个负类样本，正类样本的s
 * **spark计算**<br>
 
 ```
+
 // Compute raw scores on the test set
 val predictionAndLabels = test.map { case LabeledPoint(label, features) =>
   val prediction = model.predict(features)
@@ -35,6 +36,7 @@ val metrics = new BinaryClassificationMetrics(predictionAndLabels)
 // AUROC
 val auROC = metrics.areaUnderROC
 println("Area under ROC = " + auROC)
+
 ```
 
 * **AUPR**<br>
