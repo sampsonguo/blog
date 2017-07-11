@@ -172,3 +172,158 @@ search_similar()
   * 判别方法：由数据直接学习决策函数Y=f(X)或者条件概率分布P(Y|X)作为预测的模型，即判别模型。
   * 生成方法：由数据学习联合概率密度分布P(X,Y)，然后求出条件概率分布P(Y|X)作为预测的模型，即生成模型：P(Y|X)= P(X,Y)/ P(X)
 
+#### 手写LDA
+* code
+```
+import sys
+import random
+
+t_c = {}
+tw_c = {}
+td_c = {}
+
+d_w = {}
+d_w_t = {}
+w_S = set()
+
+ITER_NUM = 10000
+TOPIC_NUM = 2
+ALPHA = 0.01
+BETA = 0.01
+
+p_k = [0] * TOPIC_NUM
+print p_k
+
+def input():
+    while True:
+        line = sys.stdin.readline()
+        if not line:
+            break
+        items = line.strip().split('\t')
+        doc = items[0]
+        word_L = items[1:]
+        for word in word_L:
+            d_w.setdefault(doc, list())
+            d_w[doc].append(word)
+            w_S.add(word)
+
+def init():
+    for d, w_L in d_w.items():
+        for w in w_L:
+            for t in range(TOPIC_NUM):
+                t_c.setdefault(t, 0)
+                tw_c.setdefault(t, dict())
+                tw_c[t].setdefault(w, 0)
+                td_c.setdefault(t, dict())
+                td_c[t].setdefault(d, 0)
+
+    for d, w_L in d_w.items():
+        for w in w_L:
+            r = random.random()
+            if r < 0.5:
+                t = 0
+            else:
+                t = 1
+
+            d_w_t.setdefault(d, dict())
+            d_w_t[d].setdefault(w, t)
+
+            t_c[t] += 1
+            tw_c[t][w] += 1
+            td_c[t][d] += 1
+
+            print d_w_t[d][w]
+
+def sampling():
+    for iter in range(ITER_NUM):
+        print "iters is %d" % iter
+        for d, w_L in d_w.items():
+            for w in w_L:
+                t = d_w_t[d][w]
+                t_c[t] -= 1
+                tw_c[t][w] -= 1
+                td_c[t][d] -= 1
+
+                for k in range(TOPIC_NUM):
+                    p_k[k] = (tw_c[k][w] + BETA) * (td_c[k][d] + ALPHA) * 1.0 / (t_c[k] + BETA*len(w_S))
+                sum = 0
+                for k in range(TOPIC_NUM):
+                    sum += p_k[k]
+                for k in range(TOPIC_NUM):
+                    p_k[k] /= sum
+                for k in range(1, TOPIC_NUM):
+                    p_k[k] += p_k[k-1]
+                r = random.random()
+                for k in range(TOPIC_NUM):
+                    if(r<=p_k[k]):
+                        t = k
+                        break
+                d_w_t[d][w] = t
+                t_c[t] += 1
+                tw_c[t][w] += 1
+                td_c[t][d] += 1
+
+def output():
+    for d, w_L in d_w.items():
+        for w in w_L:
+            print "%s\t%s\t%d" % (d, w, d_w_t[d][w])
+
+if __name__ == "__main__":
+    input()
+    print "input end..."
+    init()
+    print "init end..."
+    sampling()
+    print "samplint end..."
+    output()
+    print "output end..."
+```
+* train corpus
+```
+doc1    枪      游戏    计算机  dota    电脑
+doc4    娃娃    美丽    面膜    高跟鞋  裙子
+doc5    购物    娃娃    裙子    SPA     指甲
+doc2    枪      帅      电脑    坦克    飞机
+doc3    游戏    坦克    飞机    数学    美丽
+doc7    计算机  帅      枪      dota
+doc6    美丽    购物    面膜    SPA     飘柔
+```
+
+* result
+```
+doc2    枪      1
+doc2    帅      1
+doc2    电脑    1
+doc2    坦克    1
+doc2    飞机    1
+doc3    游戏    1
+doc3    坦克    1
+doc3    飞机    1
+doc3    数学    1
+doc3    美丽    0
+doc1    枪      1
+doc1    游戏    1
+doc1    计算机  1
+doc1    dota    1
+doc1    电脑    1
+doc6    美丽    0
+doc6    购物    0
+doc6    面膜    0
+doc6    SPA     0
+doc6    飘柔    0
+doc7    计算机  1
+doc7    帅      1
+doc7    枪      1
+doc7    dota    1
+doc4    娃娃    0
+doc4    美丽    0
+doc4    面膜    0
+doc4    高跟鞋  0
+doc4    裙子    0
+doc5    购物    0
+doc5    娃娃    0
+doc5    裙子    0
+doc5    SPA     0
+doc5    指甲    0
+```
+写的样例默认有2个主题，一个是男生主题，一个是女生主题，lda的结果是可以把两个topic分开的。1-男生，0-女生。
