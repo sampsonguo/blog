@@ -94,7 +94,7 @@ from
   运行时长：10分钟左右
 ```
 * 关联名称<br>
-  * 处理word_topic矩阵，将ID和名称关联起来，为lda.csv
+  * 处理word_topic矩阵，将ID和名称关联起来，为lda.csv<br>
 ```
 Hql如下，
 set hive.exec.compress.output=false;
