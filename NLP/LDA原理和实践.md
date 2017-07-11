@@ -95,6 +95,7 @@ from
 ```
 * 关联名称<br>
   * 处理word_topic矩阵，将ID和名称关联起来，为lda.csv<br>
+
 ```
 Hql如下，
 set hive.exec.compress.output=false;
@@ -106,6 +107,7 @@ fields terminated by '\t';
 
 load data local inpath '/output/f_word_topic' OVERWRITE  into table xxxx;
 ```
+
 * Item2Item计算
 ```
 mport sys
