@@ -13,15 +13,40 @@ auc计算部分，除了画出roc曲线，还可以直接计算：<br>
 和Wilcoxon-Mann-Witney Test有关，即:<br>
 auc=“测试任意给一个正类样本和一个负类样本，正类样本的score有多大的概率大于负类样本的score”，也即auc的物理意义。<br>
 
-* **rank方法**<br>
-看了下zhiqiang（参考3）的代码，发现也是用这个方法实现计算auc。
+* **单机计算**<br>
+参考：https://github.com/liuzhiqiangruc/dml/blob/master/regr/auc.c
 
 * **hive计算**<br>
 使用hivemall可以方便地计算auc, 如下图<br>
 ![Local Image](../gitbook/images/AUC/5.png)<br>
 
+* **spark计算**<br>
+```
+// Compute raw scores on the test set
+val predictionAndLabels = test.map { case LabeledPoint(label, features) =>
+  val prediction = model.predict(features)
+  (prediction, label)
+}
 
-Ref:<br>
+// Instantiate metrics object
+val metrics = new BinaryClassificationMetrics(predictionAndLabels)
+
+// AUROC
+val auROC = metrics.areaUnderROC
+println("Area under ROC = " + auROC)
+```
+
+* **AUPR**<br>
+  * AUPR：Area Under Precision Recall Curve<br>
+  ![Local Image](../gitbook/images/AUC/6.png)<br>
+
+* **AUC VS AUPR (1)**<br>
+ ![Local Image](../gitbook/images/AUC/7.png)<br>
+
+* **AUC VS AUPR (2)**<br>
+![Local Image](../gitbook/images/AUC/8.png)<br>
+
+* **Ref:**<br>
 1. http://taoo.iteye.com/blog/760589
 2. http://cn.mathworks.com/help/stats/tiedrank.html?requestedDomain=www.mathworks.com
 3. https://github.com/liuzhiqiangruc/dml/blob/master/regr/auc.c
