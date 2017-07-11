@@ -108,7 +108,8 @@ fields terminated by '\t';
 load data local inpath '/output/f_word_topic' OVERWRITE  into table xxxx;
 ```
 
-* Item2Item计算
+* Item2Item计算<br>
+
 ```
 mport sys
 import math
@@ -170,12 +171,13 @@ search_similar()
 * 矩阵分解图谱<br>
 ![Local Image](../gitbook/images/LDA原理和实践/501.png)<br>
 
-* 生成模型 VS 判别模型
-  * 判别方法：由数据直接学习决策函数Y=f(X)或者条件概率分布P(Y|X)作为预测的模型，即判别模型。
-  * 生成方法：由数据学习联合概率密度分布P(X,Y)，然后求出条件概率分布P(Y|X)作为预测的模型，即生成模型：P(Y|X)= P(X,Y)/ P(X)
+* 生成模型 VS 判别模型<br>
+  * 判别方法：由数据直接学习决策函数Y=f(X)或者条件概率分布P(Y|X)作为预测的模型，即判别模型。<br>
+  * 生成方法：由数据学习联合概率密度分布P(X,Y)，然后求出条件概率分布P(Y|X)作为预测的模型，即生成模型：P(Y|X)= P(X,Y)/ P(X)<br>
 
 #### 手写LDA
-* code
+* code<br>
+
 ```
 import sys
 import random
@@ -280,7 +282,8 @@ if __name__ == "__main__":
     output()
     print "output end..."
 ```
-* train corpus
+
+* train corpus<br>
 ```
 doc1    枪      游戏    计算机  dota    电脑
 doc4    娃娃    美丽    面膜    高跟鞋  裙子
@@ -291,7 +294,7 @@ doc7    计算机  帅      枪      dota
 doc6    美丽    购物    面膜    SPA     飘柔
 ```
 
-* result
+* result<br>
 ```
 doc2    枪      1
 doc2    帅      1
@@ -328,4 +331,5 @@ doc5    裙子    0
 doc5    SPA     0
 doc5    指甲    0
 ```
+
 写的样例默认有2个主题，一个是男生主题，一个是女生主题，lda的结果是可以把两个topic分开的。1-男生，0-女生。
