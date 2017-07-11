@@ -21,6 +21,7 @@ auc=“测试任意给一个正类样本和一个负类样本，正类样本的s
 ![Local Image](../gitbook/images/AUC/5.png)<br>
 
 * **spark计算**<br>
+
 ```
 // Compute raw scores on the test set
 val predictionAndLabels = test.map { case LabeledPoint(label, features) =>
