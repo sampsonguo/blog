@@ -30,6 +30,6 @@ X * Yt = R
 
 
 ##### Ref
-1. ALS原始论文：[Yehuda Koren, Robert Bell and Chris Volinsky. Matrix Factorization Techniques for Recommender Systems](papers/Matrix Factorization Techniques for Recommender Systems.pdf)
-2. ALS隐式反馈：[Yifan Hu，Yehuda Koren∗，Chris Volinsky. Collaborative Filtering for Implicit Feedback Datasets](papers/Collaborative Filtering for Implicit Feedback Datasets.pdf)
-3. ALS-WR：[Yunhong Zhou, Dennis Wilkinson, Robert Schreiber and Rong Pan. Large-scale Parallel Collaborative Filtering for the Netflix Prize](papers/Large-scale Parallel Collaborative Filtering the Netflix Prize.pdf)
+1. ALS原始论文：[Yehuda Koren, Robert Bell and Chris Volinsky. Matrix Factorization Techniques for Recommender Systems](../papers/Matrix Factorization Techniques for Recommender Systems.pdf)
+2. ALS隐式反馈：[Yifan Hu，Yehuda Koren∗，Chris Volinsky. Collaborative Filtering for Implicit Feedback Datasets](../papers/Collaborative Filtering for Implicit Feedback Datasets.pdf)
+3. ALS-WR：[Yunhong Zhou, Dennis Wilkinson, Robert Schreiber and Rong Pan. Large-scale Parallel Collaborative Filtering for the Netflix Prize](../papers/Large-scale Parallel Collaborative Filtering the Netflix Prize.pdf)
