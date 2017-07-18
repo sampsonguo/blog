@@ -17,6 +17,7 @@
   * [4.1 **积分系统的思考**](math/积分系统的思考.md)
 * [5. **平台和工具**]()
   * [5.1 **hivemall介绍**]()
+  * [5.2 **Resilient Distributed Datasets**](spark/RDD设计思路.md)
 * [6. **其他**]()
   * [6.1 **优惠券与剩余价值**](econ/优惠券与剩余价值.md)
 
