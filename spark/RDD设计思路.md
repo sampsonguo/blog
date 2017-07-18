@@ -90,7 +90,17 @@ Bandwidth is far lower than RAM
    * wide: join, mapreduce like, failure -> all ancestors to be recomputed
 
 ![Local Image](../gitbook/images/RDD/1.png)<br>
+![Local Image](../gitbook/images/RDD/2.png)<br>
+
+##### Memory Management
+   * LRU
+
+##### Checkpoint
+   * api
+   * auto
 
 ##### REF
    * Resilient Distributed Datasets: A Fault-Tolerant Abstraction for
 In-Memory Cluster Computing<br>
+
+#####
