@@ -76,7 +76,6 @@ Bandwidth is far lower than RAM
    * Best Suit: batch app, same operation to all elements
    * Not Suit: asynchronous fine-grained updates
 
-
 ##### RDD Operations
    * Transformations and Actions
    * map: one to one
