@@ -64,3 +64,25 @@ curl -XPOST "http://localhost:9200/_search" -d'
 ##### DEMO
 * http://joelabrahamsson.com/elasticsearch-101/
 
+----
+#### Why ElasticSearch?
+
+##### 1. Full-text Search VS Like
+* Index
+    * Like: un-indexed column, so slow
+    * Full-text Search: inverted index, so fast
+* PR tradeoff
+    * Like: 100% precision
+    * Full-text Search: flexibility to tune down PR
+* Ranking
+    * Like: no similarity
+    * Full-text Search: BM25, Various Distance
+* morphological analysis
+    * treating "mice" and "mouse" as the same word
+
+##### 2.
+
+
+
+
+

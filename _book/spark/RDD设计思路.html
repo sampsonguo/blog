@@ -1,0 +1,697 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>5.2 Resilient Distributed Datasets · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="gbdt.html" />
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    1. 推荐系统
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../rec-sys/推荐系统中的相似性探讨.html">
+            
+                <a href="../rec-sys/推荐系统中的相似性探讨.html">
+            
+                    
+                    1.1 推荐系统中的相似性探讨
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../NLP/LDA原理和实践.html">
+            
+                <a href="../NLP/LDA原理和实践.html">
+            
+                    
+                    1.2 LDA原理和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../rec-sys/离线在线打通方案分析.html">
+            
+                <a href="../rec-sys/离线在线打通方案分析.html">
+            
+                    
+                    1.3 离线在线打通方案分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../rec-sys/热传导原理和实践.html">
+            
+                <a href="../rec-sys/热传导原理和实践.html">
+            
+                    
+                    1.4 热传导原理和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../rec-sys/bandit算法改进和实践.html">
+            
+                <a href="../rec-sys/bandit算法改进和实践.html">
+            
+                    
+                    1.5 bandit算法改进和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="../rec-sys/先后验分离AR算法实践.html">
+            
+                <a href="../rec-sys/先后验分离AR算法实践.html">
+            
+                    
+                    1.6 先后验分离AR算法实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    2. 机器学习
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../ml/AUC的计算方法.html">
+            
+                <a href="../ml/AUC的计算方法.html">
+            
+                    
+                    2.1 AUC的计算方法
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../ml/特征好坏和0-1标签覆盖率的关系探讨.html">
+            
+                <a href="../ml/特征好坏和0-1标签覆盖率的关系探讨.html">
+            
+                    
+                    2.2 特征好坏和0-1标签覆盖率的关系探讨
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../ml/从adaboosting谈起.html">
+            
+                <a href="../ml/从adaboosting谈起.html">
+            
+                    
+                    2.3 从adaboosting谈起
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" >
+            
+                <span>
+            
+                    
+                    3. 数据挖掘
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../dm/异常点检测算法.html">
+            
+                <a href="../dm/异常点检测算法.html">
+            
+                    
+                    3.1 异常点检测算法
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../dm/DensityPeaksClustering.html">
+            
+                <a href="../dm/DensityPeaksClustering.html">
+            
+                    
+                    3.2 DensityPeaksClustering
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../dm/LSH小结.html">
+            
+                <a href="../dm/LSH小结.html">
+            
+                    
+                    3.3 LSH小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <span>
+            
+                    
+                    4. 数学知识
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../math/积分系统的思考.html">
+            
+                <a href="../math/积分系统的思考.html">
+            
+                    
+                    4.1 积分系统的思考
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <span>
+            
+                    
+                    5. 平台和工具
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" >
+            
+                <span>
+            
+                    
+                    5.1 hivemall介绍
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.6.2" data-path="RDD设计思路.html">
+            
+                <a href="RDD设计思路.html">
+            
+                    
+                    5.2 Resilient Distributed Datasets
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="gbdt.html">
+            
+                <a href="gbdt.html">
+            
+                    
+                    5.3 Spark-GBDT经验
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <span>
+            
+                    
+                    6. 其他
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../econ/优惠券与剩余价值.html">
+            
+                <a href="../econ/优惠券与剩余价值.html">
+            
+                    
+                    6.1 优惠券与剩余价值
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >5.2 Resilient Distributed Datasets</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h5 id="motivated">Motivated</h5>
+<ul>
+<li>Iterative algorithms</li>
+<li>Interactive data mining tools</li>
+</ul>
+<h5 id="reuse-intermediate">Reuse Intermediate</h5>
+<ul>
+<li>Data Reuse: PageRank, K-means</li>
+<li>Interactive Data Mining: adhoc querys</li>
+</ul>
+<h5 id="between-mr-jobs">Between MR jobs</h5>
+<ul>
+<li>data replication</li>
+<li>dist I/O</li>
+<li>serialization</li>
+</ul>
+<h5 id="frameworks">Frameworks</h5>
+<ul>
+<li>Pregel</li>
+<li>HaLoop</li>
+</ul>
+<p>Specific Patterns, not General</p>
+<h5 id="rdds">RDDs</h5>
+<ul>
+<li>fault-tolerant</li>
+<li>parallel data structure</li>
+</ul>
+<h5 id="in-memory-storage-on-clusters">In-memory storage on clusters</h5>
+<ul>
+<li>distributed shared memory</li>
+<li>key-value stores</li>
+<li>databases</li>
+</ul>
+<h5 id="challenge-fault-tolerance">Challenge: Fault Tolerance</h5>
+<ul>
+<li>Replicate the data across machines</li>
+<li>Log updates across machines</li>
+</ul>
+<p>Bandwidth is far lower than RAM</p>
+<h5 id="interface">Interface</h5>
+<ul>
+<li>Coarse-grained Transformations: map, filter, join</li>
+<li>build a dataset rather than the actual data</li>
+</ul>
+<h5 id="programming">Programming</h5>
+<ul>
+<li>MapReduce</li>
+<li>SQL</li>
+<li>Pregel</li>
+<li>HaLoop</li>
+</ul>
+<h5 id="rdd">RDD</h5>
+<ul>
+<li>features<ul>
+<li>read-only</li>
+<li>partitioned</li>
+</ul>
+</li>
+<li>create<ul>
+<li>data in stable storage</li>
+<li>other RDDs</li>
+</ul>
+</li>
+<li>transformations<ul>
+<li>map</li>
+<li>filter</li>
+<li>join</li>
+</ul>
+</li>
+<li>lineage<ul>
+<li>not materialized at all times</li>
+<li>information about how to derived from stable storage</li>
+</ul>
+</li>
+<li>control<ul>
+<li>persistence</li>
+<li>partitioning<ul>
+<li>join: hash-partitioned in the same way</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Programming<ul>
+<li>transformations: map, filter</li>
+<li>actions: count, collect</li>
+<li>save</li>
+<li>persist</li>
+</ul>
+</li>
+</ul>
+<h5 id="advantages">Advantages</h5>
+<ul>
+<li>backup tasks</li>
+<li>data locality</li>
+<li>degrade</li>
+</ul>
+<h5 id="app-not-suitable">App Not Suitable</h5>
+<ul>
+<li>Best Suit: batch app, same operation to all elements</li>
+<li>Not Suit: asynchronous fine-grained updates</li>
+</ul>
+<h5 id="rdd-operations">RDD Operations</h5>
+<ul>
+<li>Transformations and Actions</li>
+<li>map: one to one</li>
+<li>flatMap: one to more</li>
+<li>groupByKey</li>
+<li>reduceByKey</li>
+<li>sort</li>
+</ul>
+<h5 id="dependencies">dependencies</h5>
+<ul>
+<li>narrow: map, pipline like, failure -&gt; lost parents to be recomputed</li>
+<li>wide: join, mapreduce like, failure -&gt; all ancestors to be recomputed</li>
+</ul>
+<p><img src="../gitbook/images/RDD/1.png" alt="Local Image"><br>
+<img src="../gitbook/images/RDD/2.png" alt="Local Image"><br></p>
+<h5 id="memory-management">Memory Management</h5>
+<ul>
+<li>LRU</li>
+</ul>
+<h5 id="checkpoint">Checkpoint</h5>
+<ul>
+<li>api</li>
+<li>auto</li>
+</ul>
+<h5 id="ref">REF</h5>
+<ul>
+<li>Resilient Distributed Datasets: A Fault-Tolerant Abstraction for
+In-Memory Cluster Computing<br></li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                
+                <a href="gbdt.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 5.3 Spark-GBDT经验">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"5.2 Resilient Distributed Datasets","level":"1.6.2","depth":2,"next":{"title":"5.3 Spark-GBDT经验","level":"1.6.3","depth":2,"path":"spark/gbdt.md","ref":"spark/gbdt.md","articles":[]},"previous":{"title":"5.1 hivemall介绍","level":"1.6.1","depth":2,"ref":"","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"spark/RDD设计思路.md","mtime":"2017-07-19T02:18:17.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-10T05:52:34.170Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="https://cdn.mathjax.org/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-mathjax/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

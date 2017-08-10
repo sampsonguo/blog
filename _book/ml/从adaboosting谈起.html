@@ -1,0 +1,788 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>2.3 从adaboosting谈起 · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="特征好坏和0-1标签覆盖率的关系探讨.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" >
+            
+                <span>
+            
+                    
+                    1. 推荐系统
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../rec-sys/推荐系统中的相似性探讨.html">
+            
+                <a href="../rec-sys/推荐系统中的相似性探讨.html">
+            
+                    
+                    1.1 推荐系统中的相似性探讨
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../NLP/LDA原理和实践.html">
+            
+                <a href="../NLP/LDA原理和实践.html">
+            
+                    
+                    1.2 LDA原理和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../rec-sys/离线在线打通方案分析.html">
+            
+                <a href="../rec-sys/离线在线打通方案分析.html">
+            
+                    
+                    1.3 离线在线打通方案分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../rec-sys/热传导原理和实践.html">
+            
+                <a href="../rec-sys/热传导原理和实践.html">
+            
+                    
+                    1.4 热传导原理和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../rec-sys/bandit算法改进和实践.html">
+            
+                <a href="../rec-sys/bandit算法改进和实践.html">
+            
+                    
+                    1.5 bandit算法改进和实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="../rec-sys/先后验分离AR算法实践.html">
+            
+                <a href="../rec-sys/先后验分离AR算法实践.html">
+            
+                    
+                    1.6 先后验分离AR算法实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" >
+            
+                <span>
+            
+                    
+                    2. 机器学习
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="AUC的计算方法.html">
+            
+                <a href="AUC的计算方法.html">
+            
+                    
+                    2.1 AUC的计算方法
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="特征好坏和0-1标签覆盖率的关系探讨.html">
+            
+                <a href="特征好坏和0-1标签覆盖率的关系探讨.html">
+            
+                    
+                    2.2 特征好坏和0-1标签覆盖率的关系探讨
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.3" data-path="从adaboosting谈起.html">
+            
+                <a href="从adaboosting谈起.html">
+            
+                    
+                    2.3 从adaboosting谈起
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" >
+            
+                <span>
+            
+                    
+                    3. 数据挖掘
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../dm/异常点检测算法.html">
+            
+                <a href="../dm/异常点检测算法.html">
+            
+                    
+                    3.1 异常点检测算法
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../dm/DensityPeaksClustering.html">
+            
+                <a href="../dm/DensityPeaksClustering.html">
+            
+                    
+                    3.2 DensityPeaksClustering
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../dm/LSH小结.html">
+            
+                <a href="../dm/LSH小结.html">
+            
+                    
+                    3.3 LSH小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" >
+            
+                <span>
+            
+                    
+                    4. 数学知识
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../math/积分系统的思考.html">
+            
+                <a href="../math/积分系统的思考.html">
+            
+                    
+                    4.1 积分系统的思考
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" >
+            
+                <span>
+            
+                    
+                    5. 平台和工具
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" >
+            
+                <span>
+            
+                    
+                    5.1 hivemall介绍
+            
+                </span>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../spark/RDD设计思路.html">
+            
+                <a href="../spark/RDD设计思路.html">
+            
+                    
+                    5.2 Resilient Distributed Datasets
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../spark/gbdt.html">
+            
+                <a href="../spark/gbdt.html">
+            
+                    
+                    5.3 Spark-GBDT经验
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <span>
+            
+                    
+                    6. 其他
+            
+                </span>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../econ/优惠券与剩余价值.html">
+            
+                <a href="../econ/优惠券与剩余价值.html">
+            
+                    
+                    6.1 优惠券与剩余价值
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >2.3 从adaboosting谈起</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h3 id="&#x4ECE;adaboosting&#x5230;bias&#x7684;&#x91CD;&#x8981;&#x6027;&#x548C;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x7684;&#x5B9E;&#x73B0;">&#x4ECE;adaboosting&#x5230;bias&#x7684;&#x91CD;&#x8981;&#x6027;&#x548C;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x7684;&#x5B9E;&#x73B0;</h3>
+<p>&#x7CBE;&#x51C6;&#x63A8;&#x8350;&#x662F;&#x5546;&#x4E1A;&#x5316;&#x7684;&#x91CD;&#x8981;&#x80FD;&#x529B;&#xFF0C;&#x800C;&#x5206;&#x7C7B;&#x80FD;&#x529B;&#x662F;&#x7CBE;&#x51C6;&#x63A8;&#x8350;&#x7684;&#x57FA;&#x7840;&#x3002;</p>
+<h4 id="&#x96C6;&#x6210;&#x5B66;&#x4E60;">&#x96C6;&#x6210;&#x5B66;&#x4E60;</h4>
+<p>&#x96C6;&#x6210;&#x5B66;&#x4E60;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x6CD5;&#xFF0C;bagging, boosting&#x548C;stacking&#x3002;<br>
+adaboosting&#x5168;&#x79F0;adaptive boosting&#xFF08;&#x81EA;&#x9002;&#x5E94;&#x8C03;&#x8282;&#x7684;boosting&#xFF0C;&#x5C5E;&#x4E8E;&#x5341;&#x5927;&#x673A;&#x5668;&#x5B66;&#x4E60;&#x7B97;&#x6CD5;&#x4E4B;&#x4E00;&#xFF09;</p>
+<p>&#x96C6;&#x6210;&#x5B66;&#x4E60;&#xFF1A;&#x96C6;&#x6210;&#x5B66;&#x4E60;&#x5C31;&#x662F;&#x4E00;&#x5806;&#x5F31;&#x5206;&#x7C7B;&#x5668;&#x4E00;&#x8D77;&#x5171;&#x540C;&#x52AA;&#x529B;&#xFF0C;&#x62FC;&#x51D1;&#x6210;&#x4E00;&#x4E2A;&#x5F3A;&#x5206;&#x7C7B;&#x5668;&#xFF0C;&#x56E2;&#x7ED3;&#x7684;&#x529B;&#x91CF;&#x5C31;&#x662F;&#x5927;&#x3002;<br>
+&#xFF08;&#x6709;&#x7406;&#x8BBA;&#x8BC1;&#x660E;&#x5F31;&#x5B66;&#x4E60;&#x7B97;&#x6CD5;&#xFF08;&#x6B63;&#x786E;&#x7387;&#x8D85;&#x8FC7;50%&#x5373;&#x53EF;&#xFF09;&#x53EF;&#x4EE5;&#x7EC4;&#x5408;&#x63D0;&#x5347;&#x4E3A;&#x5F3A;&#x5B66;&#x4E60;&#x7B97;&#x6CD5;&#xFF08;&#x591A;&#x68F5;&#x51B3;&#x7B56;&#x6811;&#x6709;&#x7528;&#x7684;&#x539F;&#x56E0;&#xFF1A;&#x4E00;&#x68F5;&#x51C6;&#x786E;&#x7387;0.6&#xFF0C;&#x4E09;&#x68F5;&#x51C6;&#x786E;&#x7387;0.6^3+0.6^2<em>0.4</em>3=0.648...  &#xFF09;
+   &#x65E2;&#x7136;&#x4E00;&#x5806;&#x5206;&#x7C7B;&#x5668;&#x60F3;&#x8981;&#x96C6;&#x6210;&#xFF0C;&#x90A3;&#x4E48;&#x5C31;&#x6709;&#x6295;&#x7968;&#x6743;&#x529B;&#x7684;&#x5206;&#x914D;&#x95EE;&#x9898;&#x4E86;&#x3002;</p>
+<h4 id="&#x6295;&#x7968;&#x65B9;&#x6CD5;">&#x6295;&#x7968;&#x65B9;&#x6CD5;</h4>
+<p>&#x4E00;&#x4EBA;&#x4E00;&#x7968;&#x5236;&#x5EA6;&#xFF1A;&#x4E00;&#x5806;&#x5206;&#x7C7B;&#x5668;&#x4E00;&#x4EBA;&#x4E00;&#x7968;&#x5236;&#x5EA6;&#x6295;&#x7968;&#xFF0C;&#x6765;&#x51B3;&#x5B9A;&#x5206;&#x7C7B;&#x7ED3;&#x679C;&#x3002;&#x5982;bagging&#x548C;random forest&#x7684;&#x65B9;&#x6CD5;&#x3002;</p>
+<p>&#x4E00;&#x4EBA;&#x591A;&#x7968;&#x5236;&#x5EA6;&#xFF1A;&#x4E00;&#x5806;&#x5206;&#x7C7B;&#x5668;&#xFF0C;&#x6839;&#x636E;&#x5206;&#x7C7B;&#x5668;&#x7684;&#x597D;&#x574F;&#xFF0C;&#x597D;&#x5206;&#x7C7B;&#x5668;&#x591A;&#x5206;&#x7ED9;&#x4ED6;&#x51E0;&#x7968;&#xFF0C;&#x5DEE;&#x5206;&#x7C7B;&#x5668;&#x5C11;&#x5206;&#x7ED9;&#x4ED6;&#x51E0;&#x7968;&#x3002;&#x5982;boosting&#x7684;&#x65B9;&#x6CD5;&#x3002;</p>
+<h4 id="&#x62BD;&#x6837;&#x65B9;&#x6CD5;">&#x62BD;&#x6837;&#x65B9;&#x6CD5;</h4>
+<p>&#x6837;&#x672C;&#x7B49;&#x6982;&#x7387;    VS    &#x6837;&#x672C;&#x4E0D;&#x7B49;&#x6982;&#x7387;<br>
+&#x5168;&#x90E8;&#x6837;&#x672C;  VS &#x90E8;&#x5206;&#x6837;&#x672C;<br>
+&#x91CD;&#x590D;&#x62BD;&#x6837; VS &#x4E0D;&#x91CD;&#x590D;&#x62BD;&#x6837;<br></p>
+<h4 id="adaboosting">adaboosting</h4>
+<p>adaboosting&#x5728;&#x91CC;&#x9762;&#x7684;&#x4F4D;&#x7F6E;&#xFF0C;&#x5C5E;&#x4E8E;&#xFF1A;&#x4E00;&#x4EBA;&#x591A;&#x7968;&#x5236;&#x5EA6;+&#x6837;&#x672C;&#x4E0D;&#x7B49;&#x6982;&#x7387;+&#x5168;&#x90E8;&#x6837;&#x672C;+&#x4E0D;&#x91CD;&#x590D;&#x62BD;&#x6837;</p>
+<h4 id="&#x5F31;&#x5206;&#x7C7B;&#x5668;">&#x5F31;&#x5206;&#x7C7B;&#x5668;</h4>
+<p>adaboosting&#x5BF9;&#x5176;&#x5F31;&#x5206;&#x7C7B;&#x5668;&#x7684;&#x8981;&#x6C42;&#x4E0D;&#x9AD8;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x91C7;&#x7528;&#x6700;&#x7B80;&#x5355;&#x7684;decision stump&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x5373;&#x53EA;&#x6709;&#x4E00;&#x5C42;&#x7684;&#x51B3;&#x7B56;&#x6811;&#x3002;</p>
+<h4 id="&#x8BAD;&#x7EC3;&#x6D41;&#x7A0B;">&#x8BAD;&#x7EC3;&#x6D41;&#x7A0B;</h4>
+<p><img src="../gitbook/images/adaboosting/1.png" alt="Local Image"><br></p>
+<h4 id="demo&#x5B9E;&#x73B0;">demo&#x5B9E;&#x73B0;</h4>
+<pre><code>import math
+
+class sample(object):
+    def __init__(self, feature, label, weight):
+        self.feature = feature
+        self.label = label
+        self.weight = weight
+
+class stump(object):
+    def __init__(self, dimension, sample_L):
+        self.dimension = dimension
+        self.threshold = None
+        self.leftLabel = None
+        self.rightLabel = None
+        self.error_rate = None
+        self.weight = None
+        self.leftLabel_x = None
+        self.rightLabel_x = None
+        self.sample_L = sample_L
+        self.total_error = sum([sample_x.weight for sample_x in sample_L])
+
+        ## get the best threshold ##
+        for sample_x in sample_L:
+            threshold_x = sample_x.feature[self.dimension]
+            error_rate_x = self.getErrorRate(threshold_x)
+            if self.error_rate is None or self.error_rate &gt; error_rate_x:
+                self.threshold = threshold_x
+                self.leftLabel = self.leftLabel_x
+                self.rightLabel = self.rightLabel_x
+                self.error_rate = error_rate_x
+        self.weight = self.getWeight()
+
+    def getWeight(self):
+        return 0.5*math.log((1-self.error_rate)/max(self.error_rate, 0.0001))
+
+    def getErrorRate(self, threshold_x):
+        left_1_error = 0.0
+        left_0_error = 0.0
+        right_1_error = 0.0
+        right_0_error = 0.0
+        ## get left errors ##
+        for sample_y in self.sample_L:
+            if sample_y.feature[self.dimension] &lt;= threshold_x:
+                if sample_y.label == -1:
+                    left_1_error += sample_y.weight
+                else:
+                    left_0_error += sample_y.weight
+            else:
+                if sample_y.label == -1:
+                    right_1_error += sample_y.weight
+                else:
+                    right_0_error += sample_y.weight
+        ## get error and labels ##
+        if left_1_error &lt; left_0_error:
+            self.leftLabel_x = 1
+        else:
+            self.leftLabel_x = -1
+        if right_1_error &lt; right_0_error:
+            self.rightLabel_x = 1
+        else:
+            self.rightLabel_x = -1
+        return (min(left_1_error, left_0_error) + min(right_1_error, right_0_error))/self.total_error
+
+    def reWeightSample(self):
+        for i in range(len(self.sample_L)):
+            if (self.sample_L[i].feature[self.dimension] &lt;= self.threshold and self.leftLabel == self.sample_L[i].label) \
+                or (self.sample_L[i].feature[self.dimension] &gt; self.threshold and self.rightLabel == self.sample_L[i].label):
+                self.sample_L[i].weight *= math.sqrt(self.error_rate/max(1-self.error_rate, 0.0001))
+            else:
+                self.sample_L[i].weight *= math.sqrt((1-self.error_rate)/max(self.error_rate, 0.0001))
+
+    def predict(self, sample_x):
+        if sample_x.feature[self.dimension] &lt;= self.threshold:
+            return self.leftLabel
+        else: return self.rightLabel
+
+nWeak = 3
+nSample = -1
+sample_L = []
+stump_L = []
+
+def run():
+    ## input data ##
+    inFp = open(&quot;sample&quot;, &apos;r&apos;)
+    nSample = int(inFp.readline().strip())
+    while True:
+        line = inFp.readline()
+        if not line:
+            break
+        item = map(int, line.strip().split(&quot;\t&quot;))
+        sample_x = sample(item[1:], item[0], 1.0/nSample)
+        sample_L.append(sample_x)
+    inFp.close()
+
+    ## train weak classfier ##
+    for t in range(nWeak):
+        dimension = t % 2
+        stump_x = stump(dimension, sample_L)
+        stump_x.reWeightSample()
+        print &quot;....&quot;
+        print &quot;the dimension is %d&quot;%stump_x.dimension
+        print &quot;the threshold is %.9f&quot;%stump_x.threshold
+        print &quot;the leftLabel is %d&quot;%stump_x.leftLabel
+        print &quot;the rightLabel is %d&quot;%stump_x.rightLabel
+        print &quot;the error_rate is %.9f&quot;%stump_x.error_rate
+        print &quot;the weight is %.9f&quot;%stump_x.weight
+        print [sample_x.weight for sample_x in sample_L]
+        stump_L.append(stump_x)
+
+    ## predict ##
+    for sample_x in sample_L:
+        predict_one = 0
+        for stump_x in stump_L:
+            predict_one += stump_x.weight*stump_x.predict(sample_x)
+        if predict_one &gt; 0:
+            print &quot;predict is 1&quot;
+        else:
+            print &quot;predict is -1&quot;
+
+if __name__ == &quot;__main__&quot;:
+    run()
+</code></pre><p>&#x6D4B;&#x8BD5;&#x6837;&#x4F8B;<br></p>
+<pre><code>10
+1       1       3
+1       2       2
+-1      3       2
+-1      4       3
+1       5       4
+1       6       6
+-1      6       3
+1       7       4
+-1      8       2
+-1      8       5
+</code></pre><p>&#x8F93;&#x51FA;</p>
+<pre><code>the dimension is 0
+the threshold is 2.000000000
+the leftLabel is 1
+the rightLabel is -1
+the error_rate is 0.300000000
+the weight is 0.423648930
+[0.06546536707079773, 0.06546536707079773, 0.06546536707079773, 0.06546536707079773, 0.15275252316519466, 0.15275252316519466, 0.06546536707079773, 0.15275252316519466, 0.06546536707079773, 0.06546536707079773]
+....
+the dimension is 1
+the threshold is 3.000000000
+the leftLabel is -1
+the rightLabel is 1
+the error_rate is 0.214285714
+the weight is 0.649641492
+[0.12535663410560177, 0.12535663410560177, 0.03418817293789139, 0.03418817293789139, 0.07977240352174655, 0.07977240352174655, 0.03418817293789139, 0.07977240352174655, 0.03418817293789139, 0.12535663410560177]
+....
+the dimension is 0
+the threshold is 7.000000000
+the leftLabel is 1
+the rightLabel is -1
+the error_rate is 0.136363636
+the weight is 0.922913345
+[0.049811675413689895, 0.049811675413689895, 0.08603834844182799, 0.08603834844182799, 0.031698338899620836, 0.031698338899620836, 0.08603834844182799, 0.031698338899620836, 0.01358500238555179, 0.049811675413689895]
+predict is 1
+predict is 1
+predict is -1
+predict is -1
+predict is 1
+predict is 1
+predict is -1
+predict is 1
+predict is -1
+predict is -1
+</code></pre><h4 id="&#x793A;&#x610F;&#x56FE;">&#x793A;&#x610F;&#x56FE;</h4>
+<p><img src="../gitbook/images/adaboosting/4.png" alt="Local Image"><br>
+<img src="../gitbook/images/adaboosting/3.png" alt="Local Image"><br>
+<img src="../gitbook/images/adaboosting/5.png" alt="Local Image"><br></p>
+<h4 id="&#x4E00;&#x4E2A;&#x7279;&#x6B8A;&#x7684;&#x8BAD;&#x7EC3;&#x6837;&#x672C;">&#x4E00;&#x4E2A;&#x7279;&#x6B8A;&#x7684;&#x8BAD;&#x7EC3;&#x6837;&#x672C;</h4>
+<p><img src="../gitbook/images/adaboosting/6.png" alt="Local Image"><br></p>
+<h4 id="&#x4E00;&#x4E9B;&#x7279;&#x6B8A;&#x7684;decision-stump">&#x4E00;&#x4E9B;&#x7279;&#x6B8A;&#x7684;decision stump<br></h4>
+<p>&#x9009;&#x62E9;&#x4E09;&#x9897;&#x6811;&#xFF08;&#x4E0A;&#x6587;&#x4E2D;&#x7684;&#x4EE3;&#x7801;&#x9700;&#x8981;&#x4E94;&#x68F5;&#x6811;&#xFF0C;&#x56E0;&#x4E3A;&#x5176;&#x4EA4;&#x53C9;&#x9009;&#x53D6;xy&#x4F5C;&#x4E3A;decision stump&#x7684;threshold&#xFF09;&#x5C31;&#x80FD;&#x8BAD;&#x7EC3;&#x51FA;&#x6765;&#xFF0C;&#x5982;&#x56FE;&#x6240;&#x793A;&#xFF1A;<br>
+<img src="../gitbook/images/adaboosting/7.png" alt="Local Image"><br></p>
+<p>&#x6811;A&#xFF1A;&#x5DE6;&#x4FA7;&#x7EA2;&#xFF08;-1&#x5206;&#xFF09;&#xFF0C;&#x53F3;&#x4FA7;&#x84DD;&#xFF08;+1&#x5206;&#xFF09;</p>
+<p>&#x6811;B&#xFF1A;&#x5DE6;&#x4FA7;&#x7EA2;&#xFF08;-1&#x5206;&#xFF09;&#xFF0C;&#x53F3;&#x4FA7;&#x7EA2;&#xFF08;-1&#x5206;&#xFF09;</p>
+<p>&#x6811;C&#xFF1A;&#x5DE6;&#x4FA7;&#x84DD;&#xFF08;+1&#x5206;&#xFF09;&#xFF0C;&#x53F3;&#x4FA7;&#x7EA2;&#xFF08;-1&#x5206;&#xFF09;</p>
+<p>&#x6700;&#x540E;&#x5F97;&#x5230;&#xFF0C;</p>
+<p>A&#x5DE6;&#x4FA7;&#xFF1A;-1-1+1=-1&#xFF08;&#x7EA2;&#xFF09;</p>
+<p>A~B:+1-1+1=1 &#xFF08;&#x84DD;&#xFF09;</p>
+<p>B~C: +1-1+1=1&#xFF08;&#x84DD;&#xFF09;</p>
+<p>C&#x53F3;&#x4FA7;&#xFF1A;+1-1-1=-1&#xFF08;&#x7EA2;&#xFF09;</p>
+<p>&#x5373;&#x6B63;&#x786E;&#x7684;&#x5206;&#x7C7B;&#xFF0C;&#x5176;&#x4E2D;&#x6709;&#x4E00;&#x68F5;&#x6811;&#x6BD4;&#x8F83;&#x5947;&#x602A;&#xFF0C;&#x5373;&#x6811;B&#x7684;&#x53F3;&#x4FA7;&#x548C;&#x5DE6;&#x4FA7;&#x540C;&#x65F6;&#x5224;&#x65AD;&#x4E3A;&#x7EA2;&#x8272;&#x3002;&#x770B;&#x8D77;&#x6765;&#x6CA1;&#x6709;&#x4EC0;&#x4E48;&#x7528;&#x5904;&#xFF0C;&#x4F46;&#x6B63;&#x662F;&#x8FD9;&#x4E2A;bias&#x7684;&#x7279;&#x70B9;&#xFF0C;&#x4FDD;&#x8BC1;&#x4E86;&#x5728;&#x8FD9;&#x4E2A;&#x8BAD;&#x7EC3;&#x96C6;&#x7684;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x7684;&#x5B9E;&#x73B0;&#x3002;</p>
+<h4 id="bias">bias</h4>
+<p>&#x6211;&#x7684;&#x7406;&#x89E3;&#x662F;&#xFF0C;bias&#x53EB;&#x504F;&#x597D;&#xFF0C;&#x6216;&#x8005;&#x622A;&#x8DDD;&#xFF08;&#x7C7B;&#x4F3C;&#x4E8E;y=kx+b&#x91CC;&#x7684;b&#xFF09;</p>
+<h4 id="&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x7684;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x548C;bias">&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x7684;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x548C;bias</h4>
+<p>&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x7684;&#x57FA;&#x672C;&#x80FD;&#x529B;&#x662F;&#x5176;&#x903B;&#x8F91;&#x8FD0;&#x7B97;&#x7684;&#x80FD;&#x529B;&#xFF0C;&#x5373;&#x201C;&#x4E0E;&#x201D;&#x3001;&#x201C;&#x6216;&#x201D;&#x3001;&#x201D;&#x975E;&#x201C;&#x7684;&#x80FD;&#x529B;&#x3002;</p>
+<p><img src="../gitbook/images/adaboosting/8.png" alt="Local Image"><br>
+<img src="../gitbook/images/adaboosting/9.png" alt="Local Image"><br>
+<img src="../gitbook/images/adaboosting/10.png" alt="Local Image"><br></p>
+<p>&#x5F02;&#x6216;&#x8FD0;&#x7B97;=(!a&amp;b)||(a&amp;!b)</p>
+<p>&#x5373;&#x501F;&#x52A9;bias&#x548C;sigmoid&#x51FD;&#x6570;&#xFF0C;&#x6C42;&#x5185;&#x79EF;&#x4E5F;&#x53EF;&#x4EE5;&#x5177;&#x6709;&#x903B;&#x8F91;&#x8FD0;&#x7B97;&#x80FD;&#x529B;&#xFF0C;&#x90A3;&#x5C31;&#x8D4B;&#x4E88;&#x4E86;&#x5176;&#x89E3;&#x51B3;&#x975E;&#x7EBF;&#x6027;&#x95EE;&#x9898;&#x7684;&#x80FD;&#x529B;&#x3002;</p>
+<p>svm&#x7684;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x548C;kernal</p>
+<p>svm&#x7684;&#x89E3;&#x51B3;&#x975E;&#x7EBF;&#x6027;&#x95EE;&#x9898;&#x662F;kernel&#x7684;&#x65B9;&#x6CD5;&#x3002;</p>
+<p>LR&#x7684;&#x975E;&#x7EBF;&#x6027;&#x80FD;&#x529B;&#x548C;&#x753B;&#x6BB5;</p>
+<p>LR&#x89E3;&#x51B3;&#x975E;&#x7EBF;&#x6027;&#x95EE;&#x9898;&#x53EF;&#x4EE5;&#x4F9D;&#x9760;&#x5BF9;feature&#x7684;&#x753B;&#x6BB5;&#x7684;feature engineer.</p>
+<p>&#x6700;&#x540E;&#xFF0C;&#x5E0C;&#x671B;&#x5728;&#x624B;&#x7BA1;&#x7684;&#x5546;&#x4E1A;&#x5316;&#x8FDB;&#x7A0B;&#x4E2D;&#xFF0C;&#x6570;&#x636E;&#x6316;&#x6398;&#x80FD;&#x529B;&#x80FD;&#x591F;&#x534F;&#x52A9;&#x624B;&#x7BA1;&#x505A;&#x51FA;&#x4E00;&#x4E9B;&#x5BF9;&#x624B;&#x7BA1;&#x6709;&#x76CA;&#x5904;&#xFF0C;&#x7528;&#x6237;&#x53C8;&#x4E0D;&#x53CD;&#x611F;&#x7684;&#x624B;&#x672F;&#x5200;&#x822C;&#x7CBE;&#x51C6;&#x7684;&#x5546;&#x4E1A;&#x53D8;&#x73B0;&#x80FD;&#x529B;&#x3002;</p>
+<p>&#x80FD;&#x529B;&#x6709;&#x9650;&#xFF0C;&#x5982;&#x6709;&#x9519;&#x8BEF;&#xFF0C;&#x6B22;&#x8FCE;&#x548C;&#x5404;&#x4F4D;&#x63A2;&#x8BA8;.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="特征好坏和0-1标签覆盖率的关系探讨.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 2.2 特征好坏和0-1标签覆盖率的关系探讨">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"2.3 从adaboosting谈起","level":"1.3.3","depth":2,"next":{"title":"3. 数据挖掘","level":"1.4","depth":1,"ref":"","articles":[{"title":"3.1 异常点检测算法","level":"1.4.1","depth":2,"path":"dm/异常点检测算法.md","ref":"dm/异常点检测算法.md","articles":[]},{"title":"3.2 DensityPeaksClustering","level":"1.4.2","depth":2,"path":"dm/DensityPeaksClustering.md","ref":"dm/DensityPeaksClustering.md","articles":[]},{"title":"3.3 LSH小结","level":"1.4.3","depth":2,"path":"dm/LSH小结.md","ref":"dm/LSH小结.md","articles":[]}]},"previous":{"title":"2.2 特征好坏和0-1标签覆盖率的关系探讨","level":"1.3.2","depth":2,"path":"ml/特征好坏和0-1标签覆盖率的关系探讨.md","ref":"ml/特征好坏和0-1标签覆盖率的关系探讨.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"ml/从adaboosting谈起.md","mtime":"2017-07-11T08:45:12.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-10T05:52:34.170Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="https://cdn.mathjax.org/mathjax/2.6-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-mathjax/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
