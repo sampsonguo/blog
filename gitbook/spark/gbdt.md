@@ -39,7 +39,7 @@ boostingStrategy.treeStrategy.setMaxBins(32) // 连续值分段分箱数
 boostingStrategy.treeStrategy.setMinInstancesPerNode(100) // 树叶子节点最小样本个数
 // Empty categoricalFeaturesInfo indicates all features are continuous.
 // For example, Map(0 -> 2, 4 -> 10) specifies that feature 0 is binary (taking values 0 or 1) and that feature 4 has 10 categories (values {0, 1, ..., 9}). Note that feature indices are 0-based: features 0 and 4 are the 1st and 5th elements of an instance’s feature vector.
-boostingStrategy.treeStrategy.setCategoricalFeaturesInfo(Map[Int, Int]())
+boostingStrategy.treeStrategy.categoricalFeaturesInfo = Map[Int, Int]()
 ```
 
 ##### ML库
@@ -61,6 +61,7 @@ ML和MLlib库里
     * Squared Error or Absolute Error
 * Classification
     * Log Loss
+
 所以，
 用regressor做ctr预估，损失函数是不合适的；
 用classification做预估，没有办法predict proba。
@@ -86,6 +87,7 @@ ML库可能要改源码，要更改predict函数（未实践，留坑）
 
 ##### Feature Importance
 * ML库的GBT的支持FeatureImportance
+
 ```
 // Chain indexers and GBT in a Pipeline.
 val pipeline = new Pipeline()
@@ -99,7 +101,9 @@ val importances = model
   .asInstanceOf[GBTClassificationModel]
   .featureImportances
 ```
+
 解释可以参见源码注释：
+
 ```
 /**
    * Estimate of the importance of each feature.
@@ -114,6 +118,7 @@ val importances = model
 ```
 
 * RF的ML库版本也支持Feature Importance的输出，Demo如下：
+
 ```
 // Train a RandomForest model.
 val rf = new RandomForestClassifier()
@@ -125,7 +130,9 @@ val importances = rf
   .asInstanceOf[RandomForestClassificationModel]
   .featureImportances
 ```
+
 原理如下：
+
 ```
 Given a tree ensemble model, RandomForest.featureImportances computes the importance of each feature.
 This generalizes the idea of "Gini" importance to other losses, following the explanation of Gini importance from "Random Forests" documentation by Leo Breiman and Adele Cutler, and following the implementation from scikit-learn.
