@@ -392,9 +392,30 @@ personDF.rdd // returns RDD[Row] , does not returns RDD[Person]
     * Input Columns
     * Output Columns
 * Latent Dirichlet allocation (LDA)
-    * Bisecting k-means
-    * Gaussian Mixture Model (GMM)
+* Bisecting k-means
+* Gaussian Mixture Model (GMM)
         * Input Columns
         * Output Columns
 
-#####
+##### Collaborative Filtering
+* Explicit
+* Implicit feedback
+
+##### Frequent Mining
+##### ML Tuning: model selection and hyperparameter tuning
+* Limited-memory BFGS (L-BFGS)
+* Normal equation solver for weighted least squares
+* Iteratively reweighted least squares (IRLS)
+
+##### repartition
+##### data types
+* Local Vector
+* Labeled point
+* Local matrix
+* Distribute Matrix
+    * Row Matrix:A RowMatrix can be created from an RDD[Vector] instance.
+    * IndexedRowMatrix: meaningful row indices
+    * CoordinateMatrix: a distributed matrix backed by an RDD of its entries
+    * BlockMatrix: a distributed matrix backed by an RDD of MatrixBlocks
+
+

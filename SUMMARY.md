@@ -11,7 +11,6 @@
   * [2.1 **AUC的计算方法**](ml/AUC的计算方法.md)
   * [2.2 **特征好坏和0-1标签覆盖率的关系探讨**](ml/特征好坏和0-1标签覆盖率的关系探讨.md)
   * [2.3 **从adaboosting谈起**](ml/从adaboosting谈起.md)
-  * [2.4 **MF和FM**]()
 * [3. **数据挖掘**]()
   * [3.1 **异常点检测算法**](dm/异常点检测算法.md)
   * [3.2 **DensityPeaksClustering**](dm/DensityPeaksClustering.md)
