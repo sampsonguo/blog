@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>5.1 Resilient Distributed Datasets · GitBook</title>
+        <title>6.2 LeetCode题解 · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.2">
@@ -57,8 +57,8 @@
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
     
-    <link rel="next" href="GBDT.html" />
     
+    <link rel="prev" href="../econ/优惠券与剩余价值.html" />
     
 
     </head>
@@ -359,9 +359,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.6.1" data-path="RDD设计思路.html">
+        <li class="chapter " data-level="1.6.1" data-path="../spark/RDD设计思路.html">
             
-                <a href="RDD设计思路.html">
+                <a href="../spark/RDD设计思路.html">
             
                     
                     5.1 Resilient Distributed Datasets
@@ -372,9 +372,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.6.2" data-path="GBDT.html">
+        <li class="chapter " data-level="1.6.2" data-path="../spark/GBDT.html">
             
-                <a href="GBDT.html">
+                <a href="../spark/GBDT.html">
             
                     
                     5.2 Spark-GBDT经验
@@ -417,9 +417,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.2" data-path="../LeetCode/LeetCode.html">
+        <li class="chapter active" data-level="1.7.2" data-path="LeetCode.html">
             
-                <a href="../LeetCode/LeetCode.html">
+                <a href="LeetCode.html">
             
                     
                     6.2 LeetCode题解
@@ -465,7 +465,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >5.1 Resilient Distributed Datasets</a>
+        <a href=".." >6.2 LeetCode题解</a>
     </h1>
 </div>
 
@@ -480,137 +480,47 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h5 id="motivated">Motivated</h5>
+                                <h3 id="leetcode&#x9898;&#x89E3;">LeetCode&#x9898;&#x89E3;</h3>
+<h5 id="234-palindrome-linked-list">234. Palindrome Linked List</h5>
 <ul>
-<li>Iterative algorithms</li>
-<li>Interactive data mining tools</li>
-</ul>
-<h5 id="reuse-intermediate">Reuse Intermediate</h5>
-<ul>
-<li>Data Reuse: PageRank, K-means</li>
-<li>Interactive Data Mining: adhoc querys</li>
-</ul>
-<h5 id="between-mr-jobs">Between MR jobs</h5>
-<ul>
-<li>data replication</li>
-<li>dist I/O</li>
-<li>serialization</li>
-</ul>
-<h5 id="frameworks">Frameworks</h5>
-<ul>
-<li>Pregel</li>
-<li>HaLoop</li>
-</ul>
-<p>Specific Patterns, not General</p>
-<h5 id="rdds">RDDs</h5>
-<ul>
-<li>fault-tolerant</li>
-<li>parallel data structure</li>
-</ul>
-<h5 id="in-memory-storage-on-clusters">In-memory storage on clusters</h5>
-<ul>
-<li>distributed shared memory</li>
-<li>key-value stores</li>
-<li>databases</li>
-</ul>
-<h5 id="challenge-fault-tolerance">Challenge: Fault Tolerance</h5>
-<ul>
-<li>Replicate the data across machines</li>
-<li>Log updates across machines</li>
-</ul>
-<p>Bandwidth is far lower than RAM</p>
-<h5 id="interface">Interface</h5>
-<ul>
-<li>Coarse-grained Transformations: map, filter, join</li>
-<li>build a dataset rather than the actual data</li>
-</ul>
-<h5 id="programming">Programming</h5>
-<ul>
-<li>MapReduce</li>
-<li>SQL</li>
-<li>Pregel</li>
-<li>HaLoop</li>
-</ul>
-<h5 id="rdd">RDD</h5>
-<ul>
-<li>features<ul>
-<li>read-only</li>
-<li>partitioned</li>
-</ul>
+<li><p>&#x601D;&#x8DEF;</p>
+<blockquote>
+<p> &#x4E24;&#x4E2A;&#x6307;&#x9488;&#xFF0C;&#x4E00;&#x5FEB;&#x4E00;&#x6162;&#xFF0C;&#x6162;&#x6307;&#x9488;&#x540C;&#x65F6;&#x8C03;&#x8F6C;List&#x65B9;&#x5411;&#x3002;<br>
+ &#x6CE8;&#x610F;&#x5206;&#x5947;&#x6570;&#x548C;&#x5076;&#x6570;&#x957F;&#x5EA6;&#x56DE;&#x6587;&#x4E24;&#x79CD;&#x60C5;&#x51B5;</p>
+</blockquote>
 </li>
-<li>create<ul>
-<li>data in stable storage</li>
-<li>other RDDs</li>
-</ul>
-</li>
-<li>transformations<ul>
-<li>map</li>
-<li>filter</li>
-<li>join</li>
-</ul>
-</li>
-<li>lineage<ul>
-<li>not materialized at all times</li>
-<li>information about how to derived from stable storage</li>
-</ul>
-</li>
-<li>control<ul>
-<li>persistence</li>
-<li>partitioning<ul>
-<li>join: hash-partitioned in the same way</li>
-</ul>
+<li><p>&#x4EE3;&#x7801;</p>
 </li>
 </ul>
-</li>
-<li>Programming<ul>
-<li>transformations: map, filter</li>
-<li>actions: count, collect</li>
-<li>save</li>
-<li>persist</li>
-</ul>
-</li>
-</ul>
-<h5 id="advantages">Advantages</h5>
-<ul>
-<li>backup tasks</li>
-<li>data locality</li>
-<li>degrade</li>
-</ul>
-<h5 id="app-not-suitable">App Not Suitable</h5>
-<ul>
-<li>Best Suit: batch app, same operation to all elements</li>
-<li>Not Suit: asynchronous fine-grained updates</li>
-</ul>
-<h5 id="rdd-operations">RDD Operations</h5>
-<ul>
-<li>Transformations and Actions</li>
-<li>map: one to one</li>
-<li>flatMap: one to more</li>
-<li>groupByKey</li>
-<li>reduceByKey</li>
-<li>sort</li>
-</ul>
-<h5 id="dependencies">dependencies</h5>
-<ul>
-<li>narrow: map, pipline like, failure -&gt; lost parents to be recomputed</li>
-<li>wide: join, mapreduce like, failure -&gt; all ancestors to be recomputed</li>
-</ul>
-<p><img src="../gitbook/images/RDD/1.png" alt="Local Image"><br>
-<img src="../gitbook/images/RDD/2.png" alt="Local Image"><br></p>
-<h5 id="memory-management">Memory Management</h5>
-<ul>
-<li>LRU</li>
-</ul>
-<h5 id="checkpoint">Checkpoint</h5>
-<ul>
-<li>api</li>
-<li>auto</li>
-</ul>
-<h5 id="ref">REF</h5>
-<ul>
-<li>Resilient Distributed Datasets: A Fault-Tolerant Abstraction for
-In-Memory Cluster Computing<br></li>
-</ul>
+<pre><code class="lang-python"><span class="hljs-comment"># Definition for singly-linked list.</span>
+<span class="hljs-comment"># class ListNode(object):</span>
+<span class="hljs-comment">#     def __init__(self, x):</span>
+<span class="hljs-comment">#         self.val = x</span>
+<span class="hljs-comment">#         self.next = None</span>
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Solution</span><span class="hljs-params">(object)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">isPalindrome</span><span class="hljs-params">(self, head)</span>:</span>
+        <span class="hljs-string">&quot;&quot;&quot;
+        :type head: ListNode
+        :rtype: bool
+        &quot;&quot;&quot;</span>
+        fast = head
+        slow = head
+        rev = <span class="hljs-keyword">None</span>
+        <span class="hljs-keyword">while</span> fast <span class="hljs-keyword">and</span> fast.next:
+            fast = fast.next.next
+            <span class="hljs-comment"># rev the point</span>
+            tmp = rev
+            rev = slow
+            slow = slow.next
+            rev.next = tmp
+        <span class="hljs-keyword">if</span> fast:
+            slow = slow.next
+        <span class="hljs-keyword">while</span> rev <span class="hljs-keyword">and</span> rev.val == slow.val:
+            rev = rev.next
+            slow = slow.next
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">not</span> rev
+</code></pre>
 
                                 
                                 </section>
@@ -638,10 +548,10 @@ In-Memory Cluster Computing<br></li>
 
             
                 
-                
-                <a href="GBDT.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 5.2 Spark-GBDT经验">
-                    <i class="fa fa-angle-right"></i>
+                <a href="../econ/优惠券与剩余价值.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 6.1 优惠券与剩余价值">
+                    <i class="fa fa-angle-left"></i>
                 </a>
+                
                 
             
         
@@ -650,7 +560,7 @@ In-Memory Cluster Computing<br></li>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"5.1 Resilient Distributed Datasets","level":"1.6.1","depth":2,"next":{"title":"5.2 Spark-GBDT经验","level":"1.6.2","depth":2,"path":"spark/GBDT.md","ref":"spark/GBDT.md","articles":[]},"previous":{"title":"5. 平台和工具","level":"1.6","depth":1,"ref":"","articles":[{"title":"5.1 Resilient Distributed Datasets","level":"1.6.1","depth":2,"path":"spark/RDD设计思路.md","ref":"spark/RDD设计思路.md","articles":[]},{"title":"5.2 Spark-GBDT经验","level":"1.6.2","depth":2,"path":"spark/GBDT.md","ref":"spark/GBDT.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"spark/RDD设计思路.md","mtime":"2017-07-19T02:18:17.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-14T07:30:39.402Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"6.2 LeetCode题解","level":"1.7.2","depth":2,"previous":{"title":"6.1 优惠券与剩余价值","level":"1.7.1","depth":2,"path":"econ/优惠券与剩余价值.md","ref":"econ/优惠券与剩余价值.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"LeetCode/LeetCode.md","mtime":"2017-08-14T07:30:28.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-14T07:30:39.402Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
