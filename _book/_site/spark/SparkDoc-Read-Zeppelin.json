@@ -1,0 +1,2048 @@
+{
+  "paragraphs": [
+    {
+      "text": "import org.apache.spark.ml.feature.{HashingTF, IDF, Tokenizer}\n\nval sentenceData \u003d spark.createDataFrame(Seq(\n  (0.0, \"Hi I heard about Spark\"),\n  (0.0, \"I wish Java could use case classes\"),\n  (1.0, \"Logistic regression models are neat\")\n)).toDF(\"label\", \"sentence\")\n\nval tokenizer \u003d new Tokenizer().setInputCol(\"sentence\").setOutputCol(\"words\")\nval wordsData \u003d tokenizer.transform(sentenceData)\n\nval hashingTF \u003d new HashingTF()\n  .setInputCol(\"words\").setOutputCol(\"rawFeatures\").setNumFeatures(20)\n\nval featurizedData \u003d hashingTF.transform(wordsData)\n// alternatively, CountVectorizer can also be used to get term frequency vectors\n\nval idf \u003d new IDF().setInputCol(\"rawFeatures\").setOutputCol(\"features\")\nval idfModel \u003d idf.fit(featurizedData)\n\nval rescaledData \u003d idfModel.transform(featurizedData)\nrescaledData.select(\"label\", \"features\").show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:43:03 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.{HashingTF, IDF, Tokenizer}\n\nsentenceData: org.apache.spark.sql.DataFrame \u003d [label: double, sentence: string]\n\ntokenizer: org.apache.spark.ml.feature.Tokenizer \u003d tok_ddf2c83d79df\n\nwordsData: org.apache.spark.sql.DataFrame \u003d [label: double, sentence: string ... 1 more field]\n\nhashingTF: org.apache.spark.ml.feature.HashingTF \u003d hashingTF_c250204c0dd5\n\nfeaturizedData: org.apache.spark.sql.DataFrame \u003d [label: double, sentence: string ... 2 more fields]\n\nidf: org.apache.spark.ml.feature.IDF \u003d idf_fdb237e7c8c3\n\nidfModel: org.apache.spark.ml.feature.IDFModel \u003d idf_fdb237e7c8c3\n\nrescaledData: org.apache.spark.sql.DataFrame \u003d [label: double, sentence: string ... 3 more fields]\n+-----+--------------------+\n|label|            features|\n+-----+--------------------+\n|  0.0|(20,[0,5,9,17],[0...|\n|  0.0|(20,[2,7,9,13,15]...|\n|  1.0|(20,[4,6,13,15,18...|\n+-----+--------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501864686011_-1060778974",
+      "id": "20170805-003806_66241811",
+      "dateCreated": "Aug 5, 2017 12:38:06 AM",
+      "dateStarted": "Aug 5, 2017 12:43:03 AM",
+      "dateFinished": "Aug 5, 2017 12:43:46 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.ml.feature.Word2Vec\nimport org.apache.spark.ml.linalg.Vector\nimport org.apache.spark.sql.Row\n\n// Input data: Each row is a bag of words from a sentence or document.\nval documentDF \u003d spark.createDataFrame(Seq(\n  \"Hi I heard about Spark\".split(\" \"),\n  \"I wish Java could use case classes\".split(\" \"),\n  \"Logistic regression models are neat\".split(\" \")\n).map(Tuple1.apply)).toDF(\"text\")\n\n// Learn a mapping from words to Vectors.\nval word2Vec \u003d new Word2Vec()\n  .setInputCol(\"text\")\n  .setOutputCol(\"result\")\n  .setVectorSize(3)\n  .setMinCount(0)\nval model \u003d word2Vec.fit(documentDF)\n\nval result \u003d model.transform(documentDF)\nresult.collect().foreach { case Row(text: Seq[_], features: Vector) \u003d\u003e\n  println(s\"Text: [${text.mkString(\", \")}] \u003d\u003e \\nVector: $features\\n\") }",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:43:15 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.Word2Vec\n\nimport org.apache.spark.ml.linalg.Vector\n\nimport org.apache.spark.sql.Row\n\ndocumentDF: org.apache.spark.sql.DataFrame \u003d [text: array\u003cstring\u003e]\n\nword2Vec: org.apache.spark.ml.feature.Word2Vec \u003d w2v_ed990d9fe1aa\n\nmodel: org.apache.spark.ml.feature.Word2VecModel \u003d w2v_ed990d9fe1aa\n\nresult: org.apache.spark.sql.DataFrame \u003d [text: array\u003cstring\u003e, result: vector]\nText: [Hi, I, heard, about, Spark] \u003d\u003e \nVector: [-0.008142343163490296,0.02051363289356232,0.03255096450448036]\n\nText: [I, wish, Java, could, use, case, classes] \u003d\u003e \nVector: [0.043090314205203734,0.035048123182994974,0.023512658663094044]\n\nText: [Logistic, regression, models, are, neat] \u003d\u003e \nVector: [0.038572299480438235,-0.03250147425569594,-0.01552378609776497]\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501864698629_-589815672",
+      "id": "20170805-003818_347019648",
+      "dateCreated": "Aug 5, 2017 12:38:18 AM",
+      "dateStarted": "Aug 5, 2017 12:43:15 AM",
+      "dateFinished": "Aug 5, 2017 12:43:52 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.ml.feature.{CountVectorizer, CountVectorizerModel}\n\nval df \u003d spark.createDataFrame(Seq(\n  (0, Array(\"a\", \"b\", \"c\")),\n  (1, Array(\"a\", \"b\", \"b\", \"c\", \"a\"))\n)).toDF(\"id\", \"words\")\n\n// fit a CountVectorizerModel from the corpus\nval cvModel: CountVectorizerModel \u003d new CountVectorizer()\n  .setInputCol(\"words\")\n  .setOutputCol(\"features\")\n  .setVocabSize(3)\n  .setMinDF(2)\n  .fit(df)\n\n// alternatively, define CountVectorizerModel with a-priori vocabulary\nval cvm \u003d new CountVectorizerModel(Array(\"a\", \"b\", \"c\"))\n  .setInputCol(\"words\")\n  .setOutputCol(\"features\")\n\ncvModel.transform(df).show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:44:27 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.{CountVectorizer, CountVectorizerModel}\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, words: array\u003cstring\u003e]\n\ncvModel: org.apache.spark.ml.feature.CountVectorizerModel \u003d cntVec_2c9f33fe3683\n\ncvm: org.apache.spark.ml.feature.CountVectorizerModel \u003d cntVecModel_191f72b03491\n+---+---------------+-------------------------+\n|id |words          |features                 |\n+---+---------------+-------------------------+\n|0  |[a, b, c]      |(3,[0,1,2],[1.0,1.0,1.0])|\n|1  |[a, b, b, c, a]|(3,[0,1,2],[2.0,2.0,1.0])|\n+---+---------------+-------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501864995850_1866454123",
+      "id": "20170805-004315_1346331078",
+      "dateCreated": "Aug 5, 2017 12:43:15 AM",
+      "dateStarted": "Aug 5, 2017 12:44:27 AM",
+      "dateFinished": "Aug 5, 2017 12:44:31 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Tokenizer",
+      "text": "import org.apache.spark.ml.feature.{RegexTokenizer, Tokenizer}\nimport org.apache.spark.sql.functions._\n\nval sentenceDataFrame \u003d spark.createDataFrame(Seq(\n  (0, \"Hi I heard about Spark\"),\n  (1, \"I wish Java could use case classes\"),\n  (2, \"Logistic,regression,models,are,neat\")\n)).toDF(\"id\", \"sentence\")\n\nval tokenizer \u003d new Tokenizer().setInputCol(\"sentence\").setOutputCol(\"words\")\nval regexTokenizer \u003d new RegexTokenizer()\n  .setInputCol(\"sentence\")\n  .setOutputCol(\"words\")\n  .setPattern(\"\\\\W\") // alternatively .setPattern(\"\\\\w+\").setGaps(false)\n\nval countTokens \u003d udf { (words: Seq[String]) \u003d\u003e words.length }\n\nval tokenized \u003d tokenizer.transform(sentenceDataFrame)\ntokenized.select(\"sentence\", \"words\")\n    .withColumn(\"tokens\", countTokens(col(\"words\"))).show(false)\n\nval regexTokenized \u003d regexTokenizer.transform(sentenceDataFrame)\nregexTokenized.select(\"sentence\", \"words\")\n    .withColumn(\"tokens\", countTokens(col(\"words\"))).show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:49:10 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.{RegexTokenizer, Tokenizer}\n\nimport org.apache.spark.sql.functions._\n\nsentenceDataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, sentence: string]\n\ntokenizer: org.apache.spark.ml.feature.Tokenizer \u003d tok_1e8c085429ff\n\nregexTokenizer: org.apache.spark.ml.feature.RegexTokenizer \u003d regexTok_b1803d1234fb\n\ncountTokens: org.apache.spark.sql.expressions.UserDefinedFunction \u003d UserDefinedFunction(\u003cfunction1\u003e,IntegerType,Some(List(ArrayType(StringType,true))))\n\ntokenized: org.apache.spark.sql.DataFrame \u003d [id: int, sentence: string ... 1 more field]\n+-----------------------------------+------------------------------------------+------+\n|sentence                           |words                                     |tokens|\n+-----------------------------------+------------------------------------------+------+\n|Hi I heard about Spark             |[hi, i, heard, about, spark]              |5     |\n|I wish Java could use case classes |[i, wish, java, could, use, case, classes]|7     |\n|Logistic,regression,models,are,neat|[logistic,regression,models,are,neat]     |1     |\n+-----------------------------------+------------------------------------------+------+\n\n\nregexTokenized: org.apache.spark.sql.DataFrame \u003d [id: int, sentence: string ... 1 more field]\n+-----------------------------------+------------------------------------------+------+\n|sentence                           |words                                     |tokens|\n+-----------------------------------+------------------------------------------+------+\n|Hi I heard about Spark             |[hi, i, heard, about, spark]              |5     |\n|I wish Java could use case classes |[i, wish, java, could, use, case, classes]|7     |\n|Logistic,regression,models,are,neat|[logistic, regression, models, are, neat] |5     |\n+-----------------------------------+------------------------------------------+------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865067602_1651302867",
+      "id": "20170805-004427_325573736",
+      "dateCreated": "Aug 5, 2017 12:44:27 AM",
+      "dateStarted": "Aug 5, 2017 12:49:10 AM",
+      "dateFinished": "Aug 5, 2017 12:49:16 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "StopWordsRemover",
+      "text": "import org.apache.spark.ml.feature.StopWordsRemover\n\nval remover \u003d new StopWordsRemover()\n  .setInputCol(\"raw\")\n  .setOutputCol(\"filtered\")\n\nval dataSet \u003d spark.createDataFrame(Seq(\n  (0, Seq(\"I\", \"saw\", \"the\", \"red\", \"balloon\")),\n  (1, Seq(\"Mary\", \"had\", \"a\", \"little\", \"lamb\"))\n)).toDF(\"id\", \"raw\")\n\nremover.transform(dataSet).show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:49:57 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.StopWordsRemover\n\nremover: org.apache.spark.ml.feature.StopWordsRemover \u003d stopWords_a8fb3f946d90\n\ndataSet: org.apache.spark.sql.DataFrame \u003d [id: int, raw: array\u003cstring\u003e]\n+---+----------------------------+--------------------+\n|id |raw                         |filtered            |\n+---+----------------------------+--------------------+\n|0  |[I, saw, the, red, balloon] |[saw, red, balloon] |\n|1  |[Mary, had, a, little, lamb]|[Mary, little, lamb]|\n+---+----------------------------+--------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865348439_-1548285955",
+      "id": "20170805-004908_1961246698",
+      "dateCreated": "Aug 5, 2017 12:49:08 AM",
+      "dateStarted": "Aug 5, 2017 12:49:57 AM",
+      "dateFinished": "Aug 5, 2017 12:49:59 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "nn-gram",
+      "text": "import org.apache.spark.ml.feature.NGram\n\nval wordDataFrame \u003d spark.createDataFrame(Seq(\n  (0, Array(\"Hi\", \"I\", \"heard\", \"about\", \"Spark\")),\n  (1, Array(\"I\", \"wish\", \"Java\", \"could\", \"use\", \"case\", \"classes\")),\n  (2, Array(\"Logistic\", \"regression\", \"models\", \"are\", \"neat\"))\n)).toDF(\"id\", \"words\")\n\nval ngram \u003d new NGram().setN(2).setInputCol(\"words\").setOutputCol(\"ngrams\")\n\nval ngramDataFrame \u003d ngram.transform(wordDataFrame)\nngramDataFrame.select(\"ngrams\").show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:51:10 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.NGram\n\nwordDataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, words: array\u003cstring\u003e]\n\nngram: org.apache.spark.ml.feature.NGram \u003d ngram_bb8be1f2057d\n\nngramDataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, words: array\u003cstring\u003e ... 1 more field]\n+------------------------------------------------------------------+\n|ngrams                                                            |\n+------------------------------------------------------------------+\n|[Hi I, I heard, heard about, about Spark]                         |\n|[I wish, wish Java, Java could, could use, use case, case classes]|\n|[Logistic regression, regression models, models are, are neat]    |\n+------------------------------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865397402_-120205307",
+      "id": "20170805-004957_2064350354",
+      "dateCreated": "Aug 5, 2017 12:49:57 AM",
+      "dateStarted": "Aug 5, 2017 12:51:10 AM",
+      "dateFinished": "Aug 5, 2017 12:51:13 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Binarizer",
+      "text": "import org.apache.spark.ml.feature.Binarizer\n\nval data \u003d Array((0, 0.1), (1, 0.8), (2, 0.2))\nval dataFrame \u003d spark.createDataFrame(data).toDF(\"id\", \"feature\")\n\nval binarizer: Binarizer \u003d new Binarizer()\n  .setInputCol(\"feature\")\n  .setOutputCol(\"binarized_feature\")\n  .setThreshold(0.5)\n\nval binarizedDataFrame \u003d binarizer.transform(dataFrame)\n\nprintln(s\"Binarizer output with Threshold \u003d ${binarizer.getThreshold}\")\nbinarizedDataFrame.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:51:51 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.Binarizer\n\ndata: Array[(Int, Double)] \u003d Array((0,0.1), (1,0.8), (2,0.2))\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, feature: double]\n\nbinarizer: org.apache.spark.ml.feature.Binarizer \u003d binarizer_ff532b6331c8\n\nbinarizedDataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, feature: double ... 1 more field]\nBinarizer output with Threshold \u003d 0.5\n+---+-------+-----------------+\n| id|feature|binarized_feature|\n+---+-------+-----------------+\n|  0|    0.1|              0.0|\n|  1|    0.8|              1.0|\n|  2|    0.2|              0.0|\n+---+-------+-----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865470168_980820163",
+      "id": "20170805-005110_519802893",
+      "dateCreated": "Aug 5, 2017 12:51:10 AM",
+      "dateStarted": "Aug 5, 2017 12:51:51 AM",
+      "dateFinished": "Aug 5, 2017 12:51:54 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "PCA",
+      "text": "import org.apache.spark.ml.feature.PCA\nimport org.apache.spark.ml.linalg.Vectors\n\nval data \u003d Array(\n  Vectors.sparse(5, Seq((1, 1.0), (3, 7.0))),\n  Vectors.dense(2.0, 0.0, 3.0, 4.0, 5.0),\n  Vectors.dense(4.0, 0.0, 0.0, 6.0, 7.0)\n)\nval df \u003d spark.createDataFrame(data.map(Tuple1.apply)).toDF(\"features\")\n\nval pca \u003d new PCA()\n  .setInputCol(\"features\")\n  .setOutputCol(\"pcaFeatures\")\n  .setK(3)\n  .fit(df)\n\nval result \u003d pca.transform(df).select(\"pcaFeatures\")\nresult.show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:52:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.PCA\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndata: Array[org.apache.spark.ml.linalg.Vector] \u003d Array((5,[1,3],[1.0,7.0]), [2.0,0.0,3.0,4.0,5.0], [4.0,0.0,0.0,6.0,7.0])\n\ndf: org.apache.spark.sql.DataFrame \u003d [features: vector]\n\npca: org.apache.spark.ml.feature.PCAModel \u003d pca_6362b17e352a\n\nresult: org.apache.spark.sql.DataFrame \u003d [pcaFeatures: vector]\n+-----------------------------------------------------------+\n|pcaFeatures                                                |\n+-----------------------------------------------------------+\n|[1.6485728230883807,-4.013282700516296,-5.524543751369388] |\n|[-4.645104331781534,-1.1167972663619026,-5.524543751369387]|\n|[-6.428880535676489,-5.337951427775355,-5.524543751369389] |\n+-----------------------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865511769_1143446354",
+      "id": "20170805-005151_1580127740",
+      "dateCreated": "Aug 5, 2017 12:51:51 AM",
+      "dateStarted": "Aug 5, 2017 12:52:23 AM",
+      "dateFinished": "Aug 5, 2017 12:52:27 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "PolynomialExpansion",
+      "text": "import org.apache.spark.ml.feature.PolynomialExpansion\nimport org.apache.spark.ml.linalg.Vectors\n\nval data \u003d Array(\n  Vectors.dense(2.0, 1.0),\n  Vectors.dense(0.0, 0.0),\n  Vectors.dense(3.0, -1.0)\n)\nval df \u003d spark.createDataFrame(data.map(Tuple1.apply)).toDF(\"features\")\n\nval polyExpansion \u003d new PolynomialExpansion()\n  .setInputCol(\"features\")\n  .setOutputCol(\"polyFeatures\")\n  .setDegree(3)\n\nval polyDF \u003d polyExpansion.transform(df)\npolyDF.show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:53:10 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.PolynomialExpansion\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndata: Array[org.apache.spark.ml.linalg.Vector] \u003d Array([2.0,1.0], [0.0,0.0], [3.0,-1.0])\n\ndf: org.apache.spark.sql.DataFrame \u003d [features: vector]\n\npolyExpansion: org.apache.spark.ml.feature.PolynomialExpansion \u003d poly_f2892c607e6d\n\npolyDF: org.apache.spark.sql.DataFrame \u003d [features: vector, polyFeatures: vector]\n+----------+------------------------------------------+\n|features  |polyFeatures                              |\n+----------+------------------------------------------+\n|[2.0,1.0] |[2.0,4.0,8.0,1.0,2.0,4.0,1.0,2.0,1.0]     |\n|[0.0,0.0] |[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]     |\n|[3.0,-1.0]|[3.0,9.0,27.0,-1.0,-3.0,-9.0,1.0,3.0,-1.0]|\n+----------+------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865543193_165075874",
+      "id": "20170805-005223_606509406",
+      "dateCreated": "Aug 5, 2017 12:52:23 AM",
+      "dateStarted": "Aug 5, 2017 12:53:10 AM",
+      "dateFinished": "Aug 5, 2017 12:53:12 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Discrete Cosine Transform (DCT)",
+      "text": "import org.apache.spark.ml.feature.DCT\nimport org.apache.spark.ml.linalg.Vectors\n\nval data \u003d Seq(\n  Vectors.dense(0.0, 1.0, -2.0, 3.0),\n  Vectors.dense(-1.0, 2.0, 4.0, -7.0),\n  Vectors.dense(14.0, -2.0, -5.0, 1.0))\n\nval df \u003d spark.createDataFrame(data.map(Tuple1.apply)).toDF(\"features\")\n\nval dct \u003d new DCT()\n  .setInputCol(\"features\")\n  .setOutputCol(\"featuresDCT\")\n  .setInverse(false)\n\nval dctDf \u003d dct.transform(df)\ndctDf.select(\"featuresDCT\").show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:53:56 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.DCT\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndata: Seq[org.apache.spark.ml.linalg.Vector] \u003d List([0.0,1.0,-2.0,3.0], [-1.0,2.0,4.0,-7.0], [14.0,-2.0,-5.0,1.0])\n\ndf: org.apache.spark.sql.DataFrame \u003d [features: vector]\n\ndct: org.apache.spark.ml.feature.DCT \u003d dct_8fbf2b0e199a\n\ndctDf: org.apache.spark.sql.DataFrame \u003d [features: vector, featuresDCT: vector]\n+----------------------------------------------------------------+\n|featuresDCT                                                     |\n+----------------------------------------------------------------+\n|[1.0,-1.1480502970952693,2.0000000000000004,-2.7716385975338604]|\n|[-1.0,3.378492794482933,-7.000000000000001,2.9301512653149677]  |\n|[4.0,9.304453421915744,11.000000000000002,1.5579302036357163]   |\n+----------------------------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865590082_-1186300181",
+      "id": "20170805-005310_1886939410",
+      "dateCreated": "Aug 5, 2017 12:53:10 AM",
+      "dateStarted": "Aug 5, 2017 12:53:56 AM",
+      "dateFinished": "Aug 5, 2017 12:53:59 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "StringIndexer",
+      "text": "import org.apache.spark.ml.feature.StringIndexer\n\nval df \u003d spark.createDataFrame(\n  Seq((0, \"a\"), (1, \"b\"), (2, \"c\"), (3, \"a\"), (4, \"a\"), (5, \"c\"))\n).toDF(\"id\", \"category\")\n\nval indexer \u003d new StringIndexer()\n  .setInputCol(\"category\")\n  .setOutputCol(\"categoryIndex\")\n\nval indexed \u003d indexer.fit(df).transform(df)\nindexed.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:57:22 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.StringIndexer\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, category: string]\n\nindexer: org.apache.spark.ml.feature.StringIndexer \u003d strIdx_114934871ec8\n\nindexed: org.apache.spark.sql.DataFrame \u003d [id: int, category: string ... 1 more field]\n+---+--------+-------------+\n| id|category|categoryIndex|\n+---+--------+-------------+\n|  0|       a|          0.0|\n|  1|       b|          2.0|\n|  2|       c|          1.0|\n|  3|       a|          0.0|\n|  4|       a|          0.0|\n|  5|       c|          1.0|\n+---+--------+-------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865636834_823319945",
+      "id": "20170805-005356_2073053728",
+      "dateCreated": "Aug 5, 2017 12:53:56 AM",
+      "dateStarted": "Aug 5, 2017 12:57:22 AM",
+      "dateFinished": "Aug 5, 2017 12:57:24 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "IndexToString",
+      "text": "import org.apache.spark.ml.attribute.Attribute\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer}\n\nval df \u003d spark.createDataFrame(Seq(\n  (0, \"a\"),\n  (1, \"b\"),\n  (2, \"c\"),\n  (3, \"a\"),\n  (4, \"a\"),\n  (5, \"c\")\n)).toDF(\"id\", \"category\")\n\nval indexer \u003d new StringIndexer()\n  .setInputCol(\"category\")\n  .setOutputCol(\"categoryIndex\")\n  .fit(df)\nval indexed \u003d indexer.transform(df)\n\nprintln(s\"Transformed string column \u0027${indexer.getInputCol}\u0027 \" +\n    s\"to indexed column \u0027${indexer.getOutputCol}\u0027\")\nindexed.show()\n\nval inputColSchema \u003d indexed.schema(indexer.getOutputCol)\nprintln(s\"StringIndexer will store labels in output column metadata: \" +\n    s\"${Attribute.fromStructField(inputColSchema).toString}\\n\")\n\nval converter \u003d new IndexToString()\n  .setInputCol(\"categoryIndex\")\n  .setOutputCol(\"originalCategory\")\n\nval converted \u003d converter.transform(indexed)\n\nprintln(s\"Transformed indexed column \u0027${converter.getInputCol}\u0027 back to original string \" +\n    s\"column \u0027${converter.getOutputCol}\u0027 using labels in metadata\")\nconverted.select(\"id\", \"categoryIndex\", \"originalCategory\").show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:58:09 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.attribute.Attribute\n\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer}\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, category: string]\n\nindexer: org.apache.spark.ml.feature.StringIndexerModel \u003d strIdx_2152aed5c2a7\n\nindexed: org.apache.spark.sql.DataFrame \u003d [id: int, category: string ... 1 more field]\nTransformed string column \u0027category\u0027 to indexed column \u0027categoryIndex\u0027\n+---+--------+-------------+\n| id|category|categoryIndex|\n+---+--------+-------------+\n|  0|       a|          0.0|\n|  1|       b|          2.0|\n|  2|       c|          1.0|\n|  3|       a|          0.0|\n|  4|       a|          0.0|\n|  5|       c|          1.0|\n+---+--------+-------------+\n\n\ninputColSchema: org.apache.spark.sql.types.StructField \u003d StructField(categoryIndex,DoubleType,true)\nStringIndexer will store labels in output column metadata: {\"vals\":[\"a\",\"c\",\"b\"],\"type\":\"nominal\",\"name\":\"categoryIndex\"}\n\n\nconverter: org.apache.spark.ml.feature.IndexToString \u003d idxToStr_a06209613ec8\n\nconverted: org.apache.spark.sql.DataFrame \u003d [id: int, category: string ... 2 more fields]\nTransformed indexed column \u0027categoryIndex\u0027 back to original string column \u0027originalCategory\u0027 using labels in metadata\n+---+-------------+----------------+\n| id|categoryIndex|originalCategory|\n+---+-------------+----------------+\n|  0|          0.0|               a|\n|  1|          2.0|               b|\n|  2|          1.0|               c|\n|  3|          0.0|               a|\n|  4|          0.0|               a|\n|  5|          1.0|               c|\n+---+-------------+----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865842654_-1043975381",
+      "id": "20170805-005722_266559954",
+      "dateCreated": "Aug 5, 2017 12:57:22 AM",
+      "dateStarted": "Aug 5, 2017 12:58:09 AM",
+      "dateFinished": "Aug 5, 2017 12:58:15 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "OneHotEncoder",
+      "text": "import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer}\n\nval df \u003d spark.createDataFrame(Seq(\n  (0, \"a\"),\n  (1, \"b\"),\n  (2, \"c\"),\n  (3, \"a\"),\n  (4, \"a\"),\n  (5, \"c\")\n)).toDF(\"id\", \"category\")\n\nval indexer \u003d new StringIndexer()\n  .setInputCol(\"category\")\n  .setOutputCol(\"categoryIndex\")\n  .fit(df)\nval indexed \u003d indexer.transform(df)\n\nval encoder \u003d new OneHotEncoder()\n  .setInputCol(\"categoryIndex\")\n  .setOutputCol(\"categoryVec\")\n\nval encoded \u003d encoder.transform(indexed)\nencoded.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:58:55 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer}\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, category: string]\n\nindexer: org.apache.spark.ml.feature.StringIndexerModel \u003d strIdx_c6681058a8b9\n\nindexed: org.apache.spark.sql.DataFrame \u003d [id: int, category: string ... 1 more field]\n\nencoder: org.apache.spark.ml.feature.OneHotEncoder \u003d oneHot_1de70b3aebe4\n\nencoded: org.apache.spark.sql.DataFrame \u003d [id: int, category: string ... 2 more fields]\n+---+--------+-------------+-------------+\n| id|category|categoryIndex|  categoryVec|\n+---+--------+-------------+-------------+\n|  0|       a|          0.0|(2,[0],[1.0])|\n|  1|       b|          2.0|    (2,[],[])|\n|  2|       c|          1.0|(2,[1],[1.0])|\n|  3|       a|          0.0|(2,[0],[1.0])|\n|  4|       a|          0.0|(2,[0],[1.0])|\n|  5|       c|          1.0|(2,[1],[1.0])|\n+---+--------+-------------+-------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865889587_699013758",
+      "id": "20170805-005809_2012159168",
+      "dateCreated": "Aug 5, 2017 12:58:09 AM",
+      "dateStarted": "Aug 5, 2017 12:58:55 AM",
+      "dateFinished": "Aug 5, 2017 12:58:58 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.ml.feature.VectorIndexer\n\nval data \u003d spark.read.format(\"libsvm\").load(\"data/mllib/sample_libsvm_data.txt\")\n\nval indexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexed\")\n  .setMaxCategories(10)\n\nval indexerModel \u003d indexer.fit(data)\n\nval categoricalFeatures: Set[Int] \u003d indexerModel.categoryMaps.keys.toSet\nprintln(s\"Chose ${categoricalFeatures.size} categorical features: \" +\n  categoricalFeatures.mkString(\", \"))\n\n// Create new column \"indexed\" with categorical values transformed to indices\nval indexedData \u003d indexerModel.transform(data)\nindexedData.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 1:24:32 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.VectorIndexer\n\n\n\n\n\n\n\n\n\n\n\n\norg.apache.spark.sql.AnalysisException: Path does not exist: file:/Users/sigmoidguo/Tools/zeppelin-0.7.1-bin-netinst/data/mllib/sample_libsvm_data.txt;\n  at org.apache.spark.sql.execution.datasources.DataSource$$anonfun$14.apply(DataSource.scala:382)\n  at org.apache.spark.sql.execution.datasources.DataSource$$anonfun$14.apply(DataSource.scala:370)\n  at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:241)\n  at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:241)\n  at scala.collection.immutable.List.foreach(List.scala:381)\n  at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:241)\n  at scala.collection.immutable.List.flatMap(List.scala:344)\n  at org.apache.spark.sql.execution.datasources.DataSource.resolveRelation(DataSource.scala:370)\n  at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:152)\n  at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:135)\n  ... 48 elided\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501865935689_1736574272",
+      "id": "20170805-005855_147756697",
+      "dateCreated": "Aug 5, 2017 12:58:55 AM",
+      "dateStarted": "Aug 5, 2017 1:24:32 AM",
+      "dateFinished": "Aug 5, 2017 1:24:34 AM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Interaction",
+      "text": "import org.apache.spark.ml.feature.Interaction\nimport org.apache.spark.ml.feature.VectorAssembler\n\nval df \u003d spark.createDataFrame(Seq(\n  (1, 1, 2, 3, 8, 4, 5),\n  (2, 4, 3, 8, 7, 9, 8),\n  (3, 6, 1, 9, 2, 3, 6),\n  (4, 10, 8, 6, 9, 4, 5),\n  (5, 9, 2, 7, 10, 7, 3),\n  (6, 1, 1, 4, 2, 8, 4)\n)).toDF(\"id1\", \"id2\", \"id3\", \"id4\", \"id5\", \"id6\", \"id7\")\n\nval assembler1 \u003d new VectorAssembler().\n  setInputCols(Array(\"id2\", \"id3\", \"id4\")).\n  setOutputCol(\"vec1\")\n\nval assembled1 \u003d assembler1.transform(df)\n\nval assembler2 \u003d new VectorAssembler().\n  setInputCols(Array(\"id5\", \"id6\", \"id7\")).\n  setOutputCol(\"vec2\")\n\nval assembled2 \u003d assembler2.transform(assembled1).select(\"id1\", \"vec1\", \"vec2\")\n\nval interaction \u003d new Interaction()\n  .setInputCols(Array(\"id1\", \"vec1\", \"vec2\"))\n  .setOutputCol(\"interactedCol\")\n\nval interacted \u003d interaction.transform(assembled2)\n\ninteracted.show(truncate \u003d false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 1:25:56 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.Interaction\n\nimport org.apache.spark.ml.feature.VectorAssembler\n\ndf: org.apache.spark.sql.DataFrame \u003d [id1: int, id2: int ... 5 more fields]\n\nassembler1: org.apache.spark.ml.feature.VectorAssembler \u003d vecAssembler_1948595cc0a9\n\nassembled1: org.apache.spark.sql.DataFrame \u003d [id1: int, id2: int ... 6 more fields]\n\nassembler2: org.apache.spark.ml.feature.VectorAssembler \u003d vecAssembler_787a9c3bebec\n\nassembled2: org.apache.spark.sql.DataFrame \u003d [id1: int, vec1: vector ... 1 more field]\n\ninteraction: org.apache.spark.ml.feature.Interaction \u003d interaction_56745fdd3f16\n\ninteracted: org.apache.spark.sql.DataFrame \u003d [id1: int, vec1: vector ... 2 more fields]\n+---+--------------+--------------+------------------------------------------------------+\n|id1|vec1          |vec2          |interactedCol                                         |\n+---+--------------+--------------+------------------------------------------------------+\n|1  |[1.0,2.0,3.0] |[8.0,4.0,5.0] |[8.0,4.0,5.0,16.0,8.0,10.0,24.0,12.0,15.0]            |\n|2  |[4.0,3.0,8.0] |[7.0,9.0,8.0] |[56.0,72.0,64.0,42.0,54.0,48.0,112.0,144.0,128.0]     |\n|3  |[6.0,1.0,9.0] |[2.0,3.0,6.0] |[36.0,54.0,108.0,6.0,9.0,18.0,54.0,81.0,162.0]        |\n|4  |[10.0,8.0,6.0]|[9.0,4.0,5.0] |[360.0,160.0,200.0,288.0,128.0,160.0,216.0,96.0,120.0]|\n|5  |[9.0,2.0,7.0] |[10.0,7.0,3.0]|[450.0,315.0,135.0,100.0,70.0,30.0,350.0,245.0,105.0] |\n|6  |[1.0,1.0,4.0] |[2.0,8.0,4.0] |[12.0,48.0,24.0,12.0,48.0,24.0,48.0,192.0,96.0]       |\n+---+--------------+--------------+------------------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501867472421_-1339148951",
+      "id": "20170805-012432_19526436",
+      "dateCreated": "Aug 5, 2017 1:24:32 AM",
+      "dateStarted": "Aug 5, 2017 1:25:56 AM",
+      "dateFinished": "Aug 5, 2017 1:26:01 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Normalizer",
+      "text": "import org.apache.spark.ml.feature.Normalizer\nimport org.apache.spark.ml.linalg.Vectors\n\nval dataFrame \u003d spark.createDataFrame(Seq(\n  (0, Vectors.dense(1.0, 0.5, -1.0)),\n  (1, Vectors.dense(2.0, 1.0, 1.0)),\n  (2, Vectors.dense(4.0, 10.0, 2.0))\n)).toDF(\"id\", \"features\")\n\n// Normalize each Vector using $L^1$ norm.\nval normalizer \u003d new Normalizer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"normFeatures\")\n  .setP(1.0)\n\nval l1NormData \u003d normalizer.transform(dataFrame)\nprintln(\"Normalized using L^1 norm\")\nl1NormData.show()\n\n// Normalize each Vector using $L^\\infty$ norm.\nval lInfNormData \u003d normalizer.transform(dataFrame, normalizer.p -\u003e Double.PositiveInfinity)\nprintln(\"Normalized using L^inf norm\")\nlInfNormData.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 10:36:49 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.Normalizer\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\nnormalizer: org.apache.spark.ml.feature.Normalizer \u003d normalizer_55aef165206a\n\nl1NormData: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector ... 1 more field]\nNormalized using L^1 norm\n+---+--------------+------------------+\n| id|      features|      normFeatures|\n+---+--------------+------------------+\n|  0|[1.0,0.5,-1.0]|    [0.4,0.2,-0.4]|\n|  1| [2.0,1.0,1.0]|   [0.5,0.25,0.25]|\n|  2|[4.0,10.0,2.0]|[0.25,0.625,0.125]|\n+---+--------------+------------------+\n\n\nlInfNormData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [id: int, features: vector ... 1 more field]\nNormalized using L^inf norm\n+---+--------------+--------------+\n| id|      features|  normFeatures|\n+---+--------------+--------------+\n|  0|[1.0,0.5,-1.0]|[1.0,0.5,-1.0]|\n|  1| [2.0,1.0,1.0]| [1.0,0.5,0.5]|\n|  2|[4.0,10.0,2.0]| [0.4,1.0,0.2]|\n+---+--------------+--------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501867556529_271500245",
+      "id": "20170805-012556_1191411166",
+      "dateCreated": "Aug 5, 2017 1:25:56 AM",
+      "dateStarted": "Aug 5, 2017 10:36:49 AM",
+      "dateFinished": "Aug 5, 2017 10:36:52 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "StandardScaler",
+      "text": "import org.apache.spark.ml.feature.StandardScaler\n\nval dataFrame \u003d spark.read.format(\"libsvm\").load(\"data/mllib/sample_libsvm_data.txt\")\n\nval scaler \u003d new StandardScaler()\n  .setInputCol(\"features\")\n  .setOutputCol(\"scaledFeatures\")\n  .setWithStd(true)\n  .setWithMean(false)\n\n// Compute summary statistics by fitting the StandardScaler.\nval scalerModel \u003d scaler.fit(dataFrame)\n\n// Normalize each feature to have unit standard deviation.\nval scaledData \u003d scalerModel.transform(dataFrame)\nscaledData.show()\n",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 10:37:34 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.StandardScaler\n\n\n\n\n\n\n\n\n\n\n\n\norg.apache.spark.sql.AnalysisException: Path does not exist: file:/Users/sigmoidguo/Tools/zeppelin-0.7.1-bin-netinst/data/mllib/sample_libsvm_data.txt;\n  at org.apache.spark.sql.execution.datasources.DataSource$$anonfun$14.apply(DataSource.scala:382)\n  at org.apache.spark.sql.execution.datasources.DataSource$$anonfun$14.apply(DataSource.scala:370)\n  at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:241)\n  at scala.collection.TraversableLike$$anonfun$flatMap$1.apply(TraversableLike.scala:241)\n  at scala.collection.immutable.List.foreach(List.scala:381)\n  at scala.collection.TraversableLike$class.flatMap(TraversableLike.scala:241)\n  at scala.collection.immutable.List.flatMap(List.scala:344)\n  at org.apache.spark.sql.execution.datasources.DataSource.resolveRelation(DataSource.scala:370)\n  at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:152)\n  at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:135)\n  ... 49 elided\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501900609190_-892005914",
+      "id": "20170805-103649_619587349",
+      "dateCreated": "Aug 5, 2017 10:36:49 AM",
+      "dateStarted": "Aug 5, 2017 10:37:34 AM",
+      "dateFinished": "Aug 5, 2017 10:37:35 AM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "MinMaxScaler",
+      "text": "import org.apache.spark.ml.feature.MinMaxScaler\nimport org.apache.spark.ml.linalg.Vectors\n\nval dataFrame \u003d spark.createDataFrame(Seq(\n  (0, Vectors.dense(1.0, 0.1, -1.0)),\n  (1, Vectors.dense(2.0, 1.1, 1.0)),\n  (2, Vectors.dense(3.0, 10.1, 3.0))\n)).toDF(\"id\", \"features\")\n\nval scaler \u003d new MinMaxScaler()\n  .setInputCol(\"features\")\n  .setOutputCol(\"scaledFeatures\")\n\n// Compute summary statistics and generate MinMaxScalerModel\nval scalerModel \u003d scaler.fit(dataFrame)\n\n// rescale each feature to range [min, max].\nval scaledData \u003d scalerModel.transform(dataFrame)\nprintln(s\"Features scaled to range: [${scaler.getMin}, ${scaler.getMax}]\")\nscaledData.select(\"features\", \"scaledFeatures\").show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:00:19 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.MinMaxScaler\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\nscaler: org.apache.spark.ml.feature.MinMaxScaler \u003d minMaxScal_1b42da2da9cc\n\nscalerModel: org.apache.spark.ml.feature.MinMaxScalerModel \u003d minMaxScal_1b42da2da9cc\n\nscaledData: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector ... 1 more field]\nFeatures scaled to range: [0.0, 1.0]\n+--------------+--------------+\n|      features|scaledFeatures|\n+--------------+--------------+\n|[1.0,0.1,-1.0]| [0.0,0.0,0.0]|\n| [2.0,1.1,1.0]| [0.5,0.1,0.5]|\n|[3.0,10.1,3.0]| [1.0,1.0,1.0]|\n+--------------+--------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501900654715_295221922",
+      "id": "20170805-103734_1805804776",
+      "dateCreated": "Aug 5, 2017 10:37:34 AM",
+      "dateStarted": "Aug 5, 2017 11:00:19 AM",
+      "dateFinished": "Aug 5, 2017 11:00:23 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "MinMaxScaler",
+      "text": "import org.apache.spark.ml.feature.MinMaxScaler\nimport org.apache.spark.ml.linalg.Vectors\n\nval dataFrame \u003d spark.createDataFrame(Seq(\n  (0, Vectors.dense(1.0, 0.1, -1.0)),\n  (1, Vectors.dense(2.0, 1.1, 1.0)),\n  (2, Vectors.dense(3.0, 10.1, 3.0))\n)).toDF(\"id\", \"features\")\n\nval scaler \u003d new MinMaxScaler()\n  .setInputCol(\"features\")\n  .setOutputCol(\"scaledFeatures\")\n\n// Compute summary statistics and generate MinMaxScalerModel\nval scalerModel \u003d scaler.fit(dataFrame)\n\n// rescale each feature to range [min, max].\nval scaledData \u003d scalerModel.transform(dataFrame)\nprintln(s\"Features scaled to range: [${scaler.getMin}, ${scaler.getMax}]\")\nscaledData.select(\"features\", \"scaledFeatures\").show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:01:30 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.MinMaxScaler\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\nscaler: org.apache.spark.ml.feature.MinMaxScaler \u003d minMaxScal_a9353900390c\n\nscalerModel: org.apache.spark.ml.feature.MinMaxScalerModel \u003d minMaxScal_a9353900390c\n\nscaledData: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector ... 1 more field]\nFeatures scaled to range: [0.0, 1.0]\n+--------------+--------------+\n|      features|scaledFeatures|\n+--------------+--------------+\n|[1.0,0.1,-1.0]| [0.0,0.0,0.0]|\n| [2.0,1.1,1.0]| [0.5,0.1,0.5]|\n|[3.0,10.1,3.0]| [1.0,1.0,1.0]|\n+--------------+--------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902019731_656460101",
+      "id": "20170805-110019_210343332",
+      "dateCreated": "Aug 5, 2017 11:00:19 AM",
+      "dateStarted": "Aug 5, 2017 11:01:30 AM",
+      "dateFinished": "Aug 5, 2017 11:01:32 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Bucketizer",
+      "text": "import org.apache.spark.ml.feature.Bucketizer\n\nval splits \u003d Array(Double.NegativeInfinity, -0.5, 0.0, 0.5, Double.PositiveInfinity)\n\nval data \u003d Array(-999.9, -0.5, -0.3, 0.0, 0.2, 999.9)\nval dataFrame \u003d spark.createDataFrame(data.map(Tuple1.apply)).toDF(\"features\")\n\nval bucketizer \u003d new Bucketizer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"bucketedFeatures\")\n  .setSplits(splits)\n\n// Transform original data into its bucket index.\nval bucketedData \u003d bucketizer.transform(dataFrame)\n\nprintln(s\"Bucketizer output with ${bucketizer.getSplits.length-1} buckets\")\nbucketedData.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:08:07 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.Bucketizer\n\nsplits: Array[Double] \u003d Array(-Infinity, -0.5, 0.0, 0.5, Infinity)\n\ndata: Array[Double] \u003d Array(-999.9, -0.5, -0.3, 0.0, 0.2, 999.9)\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [features: double]\n\nbucketizer: org.apache.spark.ml.feature.Bucketizer \u003d bucketizer_ca3d1923d879\n\nbucketedData: org.apache.spark.sql.DataFrame \u003d [features: double, bucketedFeatures: double]\nBucketizer output with 4 buckets\n+--------+----------------+\n|features|bucketedFeatures|\n+--------+----------------+\n|  -999.9|             0.0|\n|    -0.5|             1.0|\n|    -0.3|             1.0|\n|     0.0|             2.0|\n|     0.2|             2.0|\n|   999.9|             3.0|\n+--------+----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902090885_645225762",
+      "id": "20170805-110130_1816420714",
+      "dateCreated": "Aug 5, 2017 11:01:30 AM",
+      "dateStarted": "Aug 5, 2017 11:08:07 AM",
+      "dateFinished": "Aug 5, 2017 11:08:10 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "ElementwiseProduct",
+      "text": "import org.apache.spark.ml.feature.ElementwiseProduct\nimport org.apache.spark.ml.linalg.Vectors\n\n// Create some vector data; also works for sparse vectors\nval dataFrame \u003d spark.createDataFrame(Seq(\n  (\"a\", Vectors.dense(1.0, 2.0, 3.0)),\n  (\"b\", Vectors.dense(4.0, 5.0, 6.0)))).toDF(\"id\", \"vector\")\n\nval transformingVector \u003d Vectors.dense(0.0, 1.0, 2.0)\nval transformer \u003d new ElementwiseProduct()\n  .setScalingVec(transformingVector)\n  .setInputCol(\"vector\")\n  .setOutputCol(\"transformedVector\")\n\n// Batch transform the vectors to create new column:\ntransformer.transform(dataFrame).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:08:45 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.ElementwiseProduct\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndataFrame: org.apache.spark.sql.DataFrame \u003d [id: string, vector: vector]\n\ntransformingVector: org.apache.spark.ml.linalg.Vector \u003d [0.0,1.0,2.0]\n\ntransformer: org.apache.spark.ml.feature.ElementwiseProduct \u003d elemProd_4b7ac8244c6f\n+---+-------------+-----------------+\n| id|       vector|transformedVector|\n+---+-------------+-----------------+\n|  a|[1.0,2.0,3.0]|    [0.0,2.0,6.0]|\n|  b|[4.0,5.0,6.0]|   [0.0,5.0,12.0]|\n+---+-------------+-----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902487807_1630332899",
+      "id": "20170805-110807_107868441",
+      "dateCreated": "Aug 5, 2017 11:08:07 AM",
+      "dateStarted": "Aug 5, 2017 11:08:45 AM",
+      "dateFinished": "Aug 5, 2017 11:08:47 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "SQLTransformer",
+      "text": "import org.apache.spark.ml.feature.SQLTransformer\n\nval df \u003d spark.createDataFrame(\n  Seq((0, 1.0, 3.0), (2, 2.0, 5.0))).toDF(\"id\", \"v1\", \"v2\")\n\nval sqlTrans \u003d new SQLTransformer().setStatement(\n  \"SELECT *, (v1 + v2) AS v3, (v1 * v2) AS v4 FROM __THIS__\")\n\nsqlTrans.transform(df).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:09:21 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.SQLTransformer\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, v1: double ... 1 more field]\n\nsqlTrans: org.apache.spark.ml.feature.SQLTransformer \u003d sql_46dc3a6aafcb\n+---+---+---+---+----+\n| id| v1| v2| v3|  v4|\n+---+---+---+---+----+\n|  0|1.0|3.0|4.0| 3.0|\n|  2|2.0|5.0|7.0|10.0|\n+---+---+---+---+----+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902525271_-943606595",
+      "id": "20170805-110845_1936433115",
+      "dateCreated": "Aug 5, 2017 11:08:45 AM",
+      "dateStarted": "Aug 5, 2017 11:09:21 AM",
+      "dateFinished": "Aug 5, 2017 11:09:22 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "VectorAssembler",
+      "text": "import org.apache.spark.ml.feature.VectorAssembler\nimport org.apache.spark.ml.linalg.Vectors\n\nval dataset \u003d spark.createDataFrame(\n  Seq((0, 18, 1.0, Vectors.dense(0.0, 10.0, 0.5), 1.0))\n).toDF(\"id\", \"hour\", \"mobile\", \"userFeatures\", \"clicked\")\n\nval assembler \u003d new VectorAssembler()\n  .setInputCols(Array(\"hour\", \"mobile\", \"userFeatures\"))\n  .setOutputCol(\"features\")\n\nval output \u003d assembler.transform(dataset)\nprintln(\"Assembled columns \u0027hour\u0027, \u0027mobile\u0027, \u0027userFeatures\u0027 to vector column \u0027features\u0027\")\noutput.select(\"features\", \"clicked\").show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:10:21 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.VectorAssembler\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndataset: org.apache.spark.sql.DataFrame \u003d [id: int, hour: int ... 3 more fields]\n\nassembler: org.apache.spark.ml.feature.VectorAssembler \u003d vecAssembler_e21f3a7df2af\n\noutput: org.apache.spark.sql.DataFrame \u003d [id: int, hour: int ... 4 more fields]\nAssembled columns \u0027hour\u0027, \u0027mobile\u0027, \u0027userFeatures\u0027 to vector column \u0027features\u0027\n+-----------------------+-------+\n|features               |clicked|\n+-----------------------+-------+\n|[18.0,1.0,0.0,10.0,0.5]|1.0    |\n+-----------------------+-------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902561378_-2126832056",
+      "id": "20170805-110921_103008900",
+      "dateCreated": "Aug 5, 2017 11:09:21 AM",
+      "dateStarted": "Aug 5, 2017 11:10:21 AM",
+      "dateFinished": "Aug 5, 2017 11:10:23 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "QuantileDiscretizer",
+      "text": "import org.apache.spark.ml.feature.QuantileDiscretizer\n\nval data \u003d Array((0, 18.0), (1, 19.0), (2, 8.0), (3, 5.0), (4, 2.2))\nval df \u003d spark.createDataFrame(data).toDF(\"id\", \"hour\")\n\nval discretizer \u003d new QuantileDiscretizer()\n  .setInputCol(\"hour\")\n  .setOutputCol(\"result\")\n  .setNumBuckets(3)\n\nval result \u003d discretizer.fit(df).transform(df)\nresult.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:12:27 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.QuantileDiscretizer\n\ndata: Array[(Int, Double)] \u003d Array((0,18.0), (1,19.0), (2,8.0), (3,5.0), (4,2.2))\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, hour: double]\n\ndiscretizer: org.apache.spark.ml.feature.QuantileDiscretizer \u003d quantileDiscretizer_1a0bed3cf904\n\nresult: org.apache.spark.sql.DataFrame \u003d [id: int, hour: double ... 1 more field]\n+---+----+------+\n| id|hour|result|\n+---+----+------+\n|  0|18.0|   2.0|\n|  1|19.0|   2.0|\n|  2| 8.0|   1.0|\n|  3| 5.0|   1.0|\n|  4| 2.2|   0.0|\n+---+----+------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902621506_1171913068",
+      "id": "20170805-111021_1115554608",
+      "dateCreated": "Aug 5, 2017 11:10:21 AM",
+      "dateStarted": "Aug 5, 2017 11:12:28 AM",
+      "dateFinished": "Aug 5, 2017 11:12:29 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Imputer",
+      "text": "import org.apache.spark.ml.feature.Imputer\n\nval df \u003d spark.createDataFrame(Seq(\n  (1.0, Double.NaN),\n  (2.0, Double.NaN),\n  (Double.NaN, 3.0),\n  (4.0, 4.0),\n  (5.0, 5.0)\n)).toDF(\"a\", \"b\")\n\nval imputer \u003d new Imputer()\n  .setInputCols(Array(\"a\", \"b\"))\n  .setOutputCols(Array(\"out_a\", \"out_b\"))\n\nval model \u003d imputer.fit(df)\nmodel.transform(df).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:13:07 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\n\n\n\u003cconsole\u003e:64: error: object Imputer is not a member of package org.apache.spark.ml.feature\n       import org.apache.spark.ml.feature.Imputer\n              ^\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902747999_1414244102",
+      "id": "20170805-111227_62951218",
+      "dateCreated": "Aug 5, 2017 11:12:27 AM",
+      "dateStarted": "Aug 5, 2017 11:13:07 AM",
+      "dateFinished": "Aug 5, 2017 11:13:07 AM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "VectorSlicer",
+      "text": "import java.util.Arrays\n\nimport org.apache.spark.ml.attribute.{Attribute, AttributeGroup, NumericAttribute}\nimport org.apache.spark.ml.feature.VectorSlicer\nimport org.apache.spark.ml.linalg.Vectors\nimport org.apache.spark.sql.Row\nimport org.apache.spark.sql.types.StructType\n\nval data \u003d Arrays.asList(\n  Row(Vectors.sparse(3, Seq((0, -2.0), (1, 2.3)))),\n  Row(Vectors.dense(-2.0, 2.3, 0.0))\n)\n\nval defaultAttr \u003d NumericAttribute.defaultAttr\nval attrs \u003d Array(\"f1\", \"f2\", \"f3\").map(defaultAttr.withName)\nval attrGroup \u003d new AttributeGroup(\"userFeatures\", attrs.asInstanceOf[Array[Attribute]])\n\nval dataset \u003d spark.createDataFrame(data, StructType(Array(attrGroup.toStructField())))\n\nval slicer \u003d new VectorSlicer().setInputCol(\"userFeatures\").setOutputCol(\"features\")\n\nslicer.setIndices(Array(1)).setNames(Array(\"f3\"))\n// or slicer.setIndices(Array(1, 2)), or slicer.setNames(Array(\"f2\", \"f3\"))\n\nval output \u003d slicer.transform(dataset)\noutput.show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:21:31 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport java.util.Arrays\n\nimport org.apache.spark.ml.attribute.{Attribute, AttributeGroup, NumericAttribute}\n\nimport org.apache.spark.ml.feature.VectorSlicer\n\nimport org.apache.spark.ml.linalg.Vectors\n\nimport org.apache.spark.sql.Row\n\nimport org.apache.spark.sql.types.StructType\n\ndata: java.util.List[org.apache.spark.sql.Row] \u003d [[(3,[0,1],[-2.0,2.3])], [[-2.0,2.3,0.0]]]\n\ndefaultAttr: org.apache.spark.ml.attribute.NumericAttribute \u003d {\"type\":\"numeric\"}\n\nattrs: Array[org.apache.spark.ml.attribute.NumericAttribute] \u003d Array({\"type\":\"numeric\",\"name\":\"f1\"}, {\"type\":\"numeric\",\"name\":\"f2\"}, {\"type\":\"numeric\",\"name\":\"f3\"})\n\nattrGroup: org.apache.spark.ml.attribute.AttributeGroup \u003d {\"ml_attr\":{\"attrs\":{\"numeric\":[{\"idx\":0,\"name\":\"f1\"},{\"idx\":1,\"name\":\"f2\"},{\"idx\":2,\"name\":\"f3\"}]},\"num_attrs\":3}}\n\ndataset: org.apache.spark.sql.DataFrame \u003d [userFeatures: vector]\n\nslicer: org.apache.spark.ml.feature.VectorSlicer \u003d vectorSlicer_20e113d39ef4\n\nres35: slicer.type \u003d vectorSlicer_20e113d39ef4\n\noutput: org.apache.spark.sql.DataFrame \u003d [userFeatures: vector, features: vector]\n+--------------------+-------------+\n|userFeatures        |features     |\n+--------------------+-------------+\n|(3,[0,1],[-2.0,2.3])|(2,[0],[2.3])|\n|[-2.0,2.3,0.0]      |[2.3,0.0]    |\n+--------------------+-------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501902784117_-228572404",
+      "id": "20170805-111304_1538754778",
+      "dateCreated": "Aug 5, 2017 11:13:04 AM",
+      "dateStarted": "Aug 5, 2017 11:21:31 AM",
+      "dateFinished": "Aug 5, 2017 11:21:34 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "RFormula",
+      "text": "import org.apache.spark.ml.feature.RFormula\n\nval dataset \u003d spark.createDataFrame(Seq(\n  (7, \"US\", 18, 1.0),\n  (8, \"CA\", 12, 0.0),\n  (9, \"NZ\", 15, 0.0)\n)).toDF(\"id\", \"country\", \"hour\", \"clicked\")\n\nval formula \u003d new RFormula()\n  .setFormula(\"clicked ~ country + hour\")\n  .setFeaturesCol(\"features\")\n  .setLabelCol(\"label\")\n\nval output \u003d formula.fit(dataset).transform(dataset)\noutput.select(\"features\", \"label\").show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:28:42 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.RFormula\n\ndataset: org.apache.spark.sql.DataFrame \u003d [id: int, country: string ... 2 more fields]\n\nformula: org.apache.spark.ml.feature.RFormula \u003d RFormula(clicked ~ country + hour) (uid\u003drFormula_0b408b08907b)\n\noutput: org.apache.spark.sql.DataFrame \u003d [id: int, country: string ... 4 more fields]\n+--------------+-----+\n|      features|label|\n+--------------+-----+\n|[0.0,0.0,18.0]|  1.0|\n|[1.0,0.0,12.0]|  0.0|\n|[0.0,1.0,15.0]|  0.0|\n+--------------+-----+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501903291345_-1814972029",
+      "id": "20170805-112131_72776386",
+      "dateCreated": "Aug 5, 2017 11:21:31 AM",
+      "dateStarted": "Aug 5, 2017 11:28:42 AM",
+      "dateFinished": "Aug 5, 2017 11:28:43 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.ml.feature.ChiSqSelector\nimport org.apache.spark.ml.linalg.Vectors\n\nval data \u003d Seq(\n  (7, Vectors.dense(0.0, 0.0, 18.0, 1.0), 1.0),\n  (8, Vectors.dense(0.0, 1.0, 12.0, 0.0), 0.0),\n  (9, Vectors.dense(1.0, 0.0, 15.0, 0.1), 0.0)\n)\n\nval df \u003d spark.createDataset(data).toDF(\"id\", \"features\", \"clicked\")\n\nval selector \u003d new ChiSqSelector()\n  .setNumTopFeatures(1)\n  .setFeaturesCol(\"features\")\n  .setLabelCol(\"clicked\")\n  .setOutputCol(\"selectedFeatures\")\n\nval result \u003d selector.fit(df).transform(df)\n\nprintln(s\"ChiSqSelector output with top ${selector.getNumTopFeatures} features selected\")\nresult.show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:31:38 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.ChiSqSelector\n\nimport org.apache.spark.ml.linalg.Vectors\n\ndata: Seq[(Int, org.apache.spark.ml.linalg.Vector, Double)] \u003d List((7,[0.0,0.0,18.0,1.0],1.0), (8,[0.0,1.0,12.0,0.0],0.0), (9,[1.0,0.0,15.0,0.1],0.0))\n\ndf: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector ... 1 more field]\n\nselector: org.apache.spark.ml.feature.ChiSqSelector \u003d chiSqSelector_0a67cfb349d5\n\nresult: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector ... 2 more fields]\nChiSqSelector output with top 1 features selected\n+---+------------------+-------+----------------+\n| id|          features|clicked|selectedFeatures|\n+---+------------------+-------+----------------+\n|  7|[0.0,0.0,18.0,1.0]|    1.0|          [18.0]|\n|  8|[0.0,1.0,12.0,0.0]|    0.0|          [12.0]|\n|  9|[1.0,0.0,15.0,0.1]|    0.0|          [15.0]|\n+---+------------------+-------+----------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501903892916_124618340",
+      "id": "20170805-113132_444835360",
+      "dateCreated": "Aug 5, 2017 11:31:32 AM",
+      "dateStarted": "Aug 5, 2017 11:31:38 AM",
+      "dateFinished": "Aug 5, 2017 11:31:40 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Bucketed Random Projection for Euclidean Distance",
+      "text": "import org.apache.spark.ml.feature.BucketedRandomProjectionLSH\nimport org.apache.spark.ml.linalg.Vectors\nimport org.apache.spark.sql.functions.col\n\nval dfA \u003d spark.createDataFrame(Seq(\n  (0, Vectors.dense(1.0, 1.0)),\n  (1, Vectors.dense(1.0, -1.0)),\n  (2, Vectors.dense(-1.0, -1.0)),\n  (3, Vectors.dense(-1.0, 1.0))\n)).toDF(\"id\", \"features\")\n\nval dfB \u003d spark.createDataFrame(Seq(\n  (4, Vectors.dense(1.0, 0.0)),\n  (5, Vectors.dense(-1.0, 0.0)),\n  (6, Vectors.dense(0.0, 1.0)),\n  (7, Vectors.dense(0.0, -1.0))\n)).toDF(\"id\", \"features\")\n\nval key \u003d Vectors.dense(1.0, 0.0)\n\nval brp \u003d new BucketedRandomProjectionLSH()\n  .setBucketLength(2.0)\n  .setNumHashTables(3)\n  .setInputCol(\"features\")\n  .setOutputCol(\"hashes\")\n\nval model \u003d brp.fit(dfA)\n\n// Feature Transformation\nprintln(\"The hashed dataset where hashed values are stored in the column \u0027hashes\u0027:\")\nmodel.transform(dfA).show()\n\n// Compute the locality sensitive hashes for the input rows, then perform approximate\n// similarity join.\n// We could avoid computing hashes by passing in the already-transformed dataset, e.g.\n// `model.approxSimilarityJoin(transformedA, transformedB, 1.5)`\nprintln(\"Approximately joining dfA and dfB on Euclidean distance smaller than 1.5:\")\nmodel.approxSimilarityJoin(dfA, dfB, 1.5, \"EuclideanDistance\")\n  .select(col(\"datasetA.id\").alias(\"idA\"),\n    col(\"datasetB.id\").alias(\"idB\"),\n    col(\"EuclideanDistance\")).show()\n\n// Compute the locality sensitive hashes for the input rows, then perform approximate nearest\n// neighbor search.\n// We could avoid computing hashes by passing in the already-transformed dataset, e.g.\n// `model.approxNearestNeighbors(transformedA, key, 2)`\nprintln(\"Approximately searching dfA for 2 nearest neighbors of the key:\")\nmodel.approxNearestNeighbors(dfA, key, 2).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:32:56 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.BucketedRandomProjectionLSH\n\nimport org.apache.spark.ml.linalg.Vectors\n\nimport org.apache.spark.sql.functions.col\n\ndfA: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\ndfB: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\nkey: org.apache.spark.ml.linalg.Vector \u003d [1.0,0.0]\n\nbrp: org.apache.spark.ml.feature.BucketedRandomProjectionLSH \u003d brp-lsh_4f20df560f16\n\nmodel: org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel \u003d brp-lsh_4f20df560f16\nThe hashed dataset where hashed values are stored in the column \u0027hashes\u0027:\n+---+-----------+--------------------+\n| id|   features|              hashes|\n+---+-----------+--------------------+\n|  0|  [1.0,1.0]|[[0.0], [0.0], [-...|\n|  1| [1.0,-1.0]|[[-1.0], [-1.0], ...|\n|  2|[-1.0,-1.0]|[[-1.0], [-1.0], ...|\n|  3| [-1.0,1.0]|[[0.0], [0.0], [-...|\n+---+-----------+--------------------+\n\nApproximately joining dfA and dfB on Euclidean distance smaller than 1.5:\n+---+---+-----------------+\n|idA|idB|EuclideanDistance|\n+---+---+-----------------+\n|  1|  4|              1.0|\n|  0|  6|              1.0|\n|  1|  7|              1.0|\n|  3|  5|              1.0|\n|  0|  4|              1.0|\n|  3|  6|              1.0|\n|  2|  7|              1.0|\n|  2|  5|              1.0|\n+---+---+-----------------+\n\nApproximately searching dfA for 2 nearest neighbors of the key:\n+---+----------+--------------------+-------+\n| id|  features|              hashes|distCol|\n+---+----------+--------------------+-------+\n|  1|[1.0,-1.0]|[[-1.0], [-1.0], ...|    1.0|\n|  0| [1.0,1.0]|[[0.0], [0.0], [-...|    1.0|\n+---+----------+--------------------+-------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501903694920_872313503",
+      "id": "20170805-112814_872411157",
+      "dateCreated": "Aug 5, 2017 11:28:14 AM",
+      "dateStarted": "Aug 5, 2017 11:32:56 AM",
+      "dateFinished": "Aug 5, 2017 11:33:02 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "MinHash for Jaccard Distance",
+      "text": "import org.apache.spark.ml.feature.MinHashLSH\nimport org.apache.spark.ml.linalg.Vectors\nimport org.apache.spark.sql.functions.col\n\nval dfA \u003d spark.createDataFrame(Seq(\n  (0, Vectors.sparse(6, Seq((0, 1.0), (1, 1.0), (2, 1.0)))),\n  (1, Vectors.sparse(6, Seq((2, 1.0), (3, 1.0), (4, 1.0)))),\n  (2, Vectors.sparse(6, Seq((0, 1.0), (2, 1.0), (4, 1.0))))\n)).toDF(\"id\", \"features\")\n\nval dfB \u003d spark.createDataFrame(Seq(\n  (3, Vectors.sparse(6, Seq((1, 1.0), (3, 1.0), (5, 1.0)))),\n  (4, Vectors.sparse(6, Seq((2, 1.0), (3, 1.0), (5, 1.0)))),\n  (5, Vectors.sparse(6, Seq((1, 1.0), (2, 1.0), (4, 1.0))))\n)).toDF(\"id\", \"features\")\n\nval key \u003d Vectors.sparse(6, Seq((1, 1.0), (3, 1.0)))\n\nval mh \u003d new MinHashLSH()\n  .setNumHashTables(5)\n  .setInputCol(\"features\")\n  .setOutputCol(\"hashes\")\n\nval model \u003d mh.fit(dfA)\n\n// Feature Transformation\nprintln(\"The hashed dataset where hashed values are stored in the column \u0027hashes\u0027:\")\nmodel.transform(dfA).show()\n\n// Compute the locality sensitive hashes for the input rows, then perform approximate\n// similarity join.\n// We could avoid computing hashes by passing in the already-transformed dataset, e.g.\n// `model.approxSimilarityJoin(transformedA, transformedB, 0.6)`\nprintln(\"Approximately joining dfA and dfB on Jaccard distance smaller than 0.6:\")\nmodel.approxSimilarityJoin(dfA, dfB, 0.6, \"JaccardDistance\")\n  .select(col(\"datasetA.id\").alias(\"idA\"),\n    col(\"datasetB.id\").alias(\"idB\"),\n    col(\"JaccardDistance\")).show()\n\n// Compute the locality sensitive hashes for the input rows, then perform approximate nearest\n// neighbor search.\n// We could avoid computing hashes by passing in the already-transformed dataset, e.g.\n// `model.approxNearestNeighbors(transformedA, key, 2)`\n// It may return less than 2 rows when not enough approximate near-neighbor candidates are\n// found.\nprintln(\"Approximately searching dfA for 2 nearest neighbors of the key:\")\nmodel.approxNearestNeighbors(dfA, key, 2).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:33:20 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.feature.MinHashLSH\n\nimport org.apache.spark.ml.linalg.Vectors\n\nimport org.apache.spark.sql.functions.col\n\ndfA: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\ndfB: org.apache.spark.sql.DataFrame \u003d [id: int, features: vector]\n\nkey: org.apache.spark.ml.linalg.Vector \u003d (6,[1,3],[1.0,1.0])\n\nmh: org.apache.spark.ml.feature.MinHashLSH \u003d mh-lsh_6096caacb726\n\nmodel: org.apache.spark.ml.feature.MinHashLSHModel \u003d mh-lsh_6096caacb726\nThe hashed dataset where hashed values are stored in the column \u0027hashes\u0027:\n+---+--------------------+--------------------+\n| id|            features|              hashes|\n+---+--------------------+--------------------+\n|  0|(6,[0,1,2],[1.0,1...|[[-2.031299587E9]...|\n|  1|(6,[2,3,4],[1.0,1...|[[-2.031299587E9]...|\n|  2|(6,[0,2,4],[1.0,1...|[[-2.031299587E9]...|\n+---+--------------------+--------------------+\n\nApproximately joining dfA and dfB on Jaccard distance smaller than 0.6:\n+---+---+---------------+\n|idA|idB|JaccardDistance|\n+---+---+---------------+\n|  0|  5|            0.5|\n|  1|  5|            0.5|\n|  2|  5|            0.5|\n|  1|  4|            0.5|\n+---+---+---------------+\n\nApproximately searching dfA for 2 nearest neighbors of the key:\n+---+--------------------+--------------------+-------+\n| id|            features|              hashes|distCol|\n+---+--------------------+--------------------+-------+\n|  0|(6,[0,1,2],[1.0,1...|[[-2.031299587E9]...|   0.75|\n+---+--------------------+--------------------+-------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501903976855_-1638377741",
+      "id": "20170805-113256_1802589933",
+      "dateCreated": "Aug 5, 2017 11:32:56 AM",
+      "dateStarted": "Aug 5, 2017 11:33:20 AM",
+      "dateFinished": "Aug 5, 2017 11:33:25 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Binomial logistic regression",
+      "text": "import org.apache.spark.ml.classification.LogisticRegression\n\n// Load training data\nval training \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\nval lr \u003d new LogisticRegression()\n  .setMaxIter(10)\n  .setRegParam(0.3)\n  .setElasticNetParam(0.8)\n\n// Fit the model\nval lrModel \u003d lr.fit(training)\n\n// Print the coefficients and intercept for logistic regression\nprintln(s\"Coefficients: ${lrModel.coefficients} Intercept: ${lrModel.intercept}\")\n\n// We can also use the multinomial family for binary classification\nval mlr \u003d new LogisticRegression()\n  .setMaxIter(10)\n  .setRegParam(0.3)\n  .setElasticNetParam(0.8)\n  .setFamily(\"multinomial\")\n\nval mlrModel \u003d mlr.fit(training)\n\n// Print the coefficients and intercepts for logistic regression with multinomial family\nprintln(s\"Multinomial coefficients: ${mlrModel.coefficientMatrix}\")\nprintln(s\"Multinomial intercepts: ${mlrModel.interceptVector}\")",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:40:32 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.LogisticRegression\n\ntraining: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlr: org.apache.spark.ml.classification.LogisticRegression \u003d logreg_db0ae1b4efd2\n\nlrModel: org.apache.spark.ml.classification.LogisticRegressionModel \u003d logreg_db0ae1b4efd2\nCoefficients: (692,[244,263,272,300,301,328,350,351,378,379,405,406,407,428,433,434,455,456,461,462,483,484,489,490,496,511,512,517,539,540,568],[-7.353983524188197E-5,-9.102738505589466E-5,-1.9467430546904298E-4,-2.0300642473486668E-4,-3.1476183314863995E-5,-6.842977602660743E-5,1.5883626898239883E-5,1.4023497091372047E-5,3.5432047524968605E-4,1.1443272898171087E-4,1.0016712383666666E-4,6.014109303795481E-4,2.840248179122762E-4,-1.1541084736508837E-4,3.85996886312906E-4,6.35019557424107E-4,-1.1506412384575676E-4,-1.5271865864986808E-4,2.804933808994214E-4,6.070117471191634E-4,-2.008459663247437E-4,-1.421075579290126E-4,2.739010341160883E-4,2.7730456244968115E-4,-9.838027027269332E-5,-3.808522443517704E-4,-2.5315198008555033E-4,2.7747714770754307E-4,-2.443619763919199E-4,-0.0015394744687597765,-2.3073328411331293E-4]) Intercept: 0.22456315961250325\n\nmlr: org.apache.spark.ml.classification.LogisticRegression \u003d logreg_12fc4ad79a97\n\nmlrModel: org.apache.spark.ml.classification.LogisticRegressionModel \u003d logreg_12fc4ad79a97\nMultinomial coefficients: 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  ... (692 total)\n0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  ...\nMultinomial intercepts: [-0.12065879445860686,0.12065879445860686]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904000424_-377358026",
+      "id": "20170805-113320_662987804",
+      "dateCreated": "Aug 5, 2017 11:33:20 AM",
+      "dateStarted": "Aug 5, 2017 11:40:32 AM",
+      "dateFinished": "Aug 5, 2017 11:40:37 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "import org.apache.spark.ml.classification.{BinaryLogisticRegressionSummary, LogisticRegression}\n\n// Extract the summary from the returned LogisticRegressionModel instance trained in the earlier\n// example\nval trainingSummary \u003d lrModel.summary\n\n// Obtain the objective per iteration.\nval objectiveHistory \u003d trainingSummary.objectiveHistory\nprintln(\"objectiveHistory:\")\nobjectiveHistory.foreach(loss \u003d\u003e println(loss))\n\n// Obtain the metrics useful to judge performance on test data.\n// We cast the summary to a BinaryLogisticRegressionSummary since the problem is a\n// binary classification problem.\nval binarySummary \u003d trainingSummary.asInstanceOf[BinaryLogisticRegressionSummary]\n\n// Obtain the receiver-operating characteristic as a dataframe and areaUnderROC.\nval roc \u003d binarySummary.roc\nroc.show()\nprintln(s\"areaUnderROC: ${binarySummary.areaUnderROC}\")\n\n// Set the model threshold to maximize F-Measure\nval fMeasure \u003d binarySummary.fMeasureByThreshold\nval maxFMeasure \u003d fMeasure.select(max(\"F-Measure\")).head().getDouble(0)\nval bestThreshold \u003d fMeasure.where($\"F-Measure\" \u003d\u003d\u003d maxFMeasure)\n  .select(\"threshold\").head().getDouble(0)\nlrModel.setThreshold(bestThreshold)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:41:45 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.{BinaryLogisticRegressionSummary, LogisticRegression}\n\ntrainingSummary: org.apache.spark.ml.classification.LogisticRegressionTrainingSummary \u003d org.apache.spark.ml.classification.BinaryLogisticRegressionTrainingSummary@5fc31b66\n\nobjectiveHistory: Array[Double] \u003d Array(0.6833149135741672, 0.6662875751473734, 0.6217068546034618, 0.6127265245887887, 0.6060347986802873, 0.6031750687571562, 0.5969621534836274, 0.5940743031983118, 0.5906089243339022, 0.5894724576491042, 0.5882187775729587)\nobjectiveHistory:\n0.6833149135741672\n0.6662875751473734\n0.6217068546034618\n0.6127265245887887\n0.6060347986802873\n0.6031750687571562\n0.5969621534836274\n0.5940743031983118\n0.5906089243339022\n0.5894724576491042\n0.5882187775729587\n\nbinarySummary: org.apache.spark.ml.classification.BinaryLogisticRegressionSummary \u003d org.apache.spark.ml.classification.BinaryLogisticRegressionTrainingSummary@5fc31b66\n\nroc: org.apache.spark.sql.DataFrame \u003d [FPR: double, TPR: double]\n+---+--------------------+\n|FPR|                 TPR|\n+---+--------------------+\n|0.0|                 0.0|\n|0.0|0.017543859649122806|\n|0.0| 0.03508771929824561|\n|0.0| 0.05263157894736842|\n|0.0| 0.07017543859649122|\n|0.0| 0.08771929824561403|\n|0.0| 0.10526315789473684|\n|0.0| 0.12280701754385964|\n|0.0| 0.14035087719298245|\n|0.0| 0.15789473684210525|\n|0.0| 0.17543859649122806|\n|0.0| 0.19298245614035087|\n|0.0| 0.21052631578947367|\n|0.0| 0.22807017543859648|\n|0.0| 0.24561403508771928|\n|0.0|  0.2631578947368421|\n|0.0|  0.2807017543859649|\n|0.0|  0.2982456140350877|\n|0.0|  0.3157894736842105|\n|0.0|  0.3333333333333333|\n+---+--------------------+\nonly showing top 20 rows\n\nareaUnderROC: 1.0\n\nfMeasure: org.apache.spark.sql.DataFrame \u003d [threshold: double, F-Measure: double]\n\nmaxFMeasure: Double \u003d 1.0\n\nbestThreshold: Double \u003d 0.5585022394278357\n\nres60: lrModel.type \u003d logreg_db0ae1b4efd2\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904381667_1992109591",
+      "id": "20170805-113941_2073499148",
+      "dateCreated": "Aug 5, 2017 11:39:41 AM",
+      "dateStarted": "Aug 5, 2017 11:41:45 AM",
+      "dateFinished": "Aug 5, 2017 11:41:48 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Multinomial logistic regression",
+      "text": "import org.apache.spark.ml.classification.LogisticRegression\n\n// Load training data\nval training \u003d spark\n  .read\n  .format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_multiclass_classification_data.txt\")\n\nval lr \u003d new LogisticRegression()\n  .setMaxIter(10)\n  .setRegParam(0.3)\n  .setElasticNetParam(0.8)\n\n// Fit the model\nval lrModel \u003d lr.fit(training)\n\n// Print the coefficients and intercept for multinomial logistic regression\nprintln(s\"Coefficients: \\n${lrModel.coefficientMatrix}\")\nprintln(s\"Intercepts: ${lrModel.interceptVector}\")",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:42:44 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.LogisticRegression\n\ntraining: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlr: org.apache.spark.ml.classification.LogisticRegression \u003d logreg_658f278196e9\n\nlrModel: org.apache.spark.ml.classification.LogisticRegressionModel \u003d logreg_658f278196e9\nCoefficients: \n0.0  0.0  0.0                  0.3176483191238039   \n0.0  0.0  -0.7803943459681859  -0.3769611423403096  \n0.0  0.0  0.0                  0.0                  \nIntercepts: [0.05165231659832854,-0.12391224990853622,0.07225993331020768]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904505674_1124252346",
+      "id": "20170805-114145_1959573240",
+      "dateCreated": "Aug 5, 2017 11:41:45 AM",
+      "dateStarted": "Aug 5, 2017 11:42:44 AM",
+      "dateFinished": "Aug 5, 2017 11:42:46 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Decision tree classifier",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.classification.DecisionTreeClassificationModel\nimport org.apache.spark.ml.classification.DecisionTreeClassifier\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\n// Load the data stored in LIBSVM format as a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Index labels, adding metadata to the label column.\n// Fit on whole dataset to include all labels in index.\nval labelIndexer \u003d new StringIndexer()\n  .setInputCol(\"label\")\n  .setOutputCol(\"indexedLabel\")\n  .fit(data)\n// Automatically identify categorical features, and index them.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4) // features with \u003e 4 distinct values are treated as continuous.\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a DecisionTree model.\nval dt \u003d new DecisionTreeClassifier()\n  .setLabelCol(\"indexedLabel\")\n  .setFeaturesCol(\"indexedFeatures\")\n\n// Convert indexed labels back to original labels.\nval labelConverter \u003d new IndexToString()\n  .setInputCol(\"prediction\")\n  .setOutputCol(\"predictedLabel\")\n  .setLabels(labelIndexer.labels)\n\n// Chain indexers and tree in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(labelIndexer, featureIndexer, dt, labelConverter))\n\n// Train model. This also runs the indexers.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"predictedLabel\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setLabelCol(\"indexedLabel\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"accuracy\")\nval accuracy \u003d evaluator.evaluate(predictions)\nprintln(\"Test Error \u003d \" + (1.0 - accuracy))\n\nval treeModel \u003d model.stages(2).asInstanceOf[DecisionTreeClassificationModel]\nprintln(\"Learned classification tree model:\\n\" + treeModel.toDebugString)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:43:41 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.classification.DecisionTreeClassificationModel\n\nimport org.apache.spark.ml.classification.DecisionTreeClassifier\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlabelIndexer: org.apache.spark.ml.feature.StringIndexerModel \u003d strIdx_7e0e4ce304b3\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_1659198d1956\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\ndt: org.apache.spark.ml.classification.DecisionTreeClassifier \u003d dtc_4b91289a1e31\n\nlabelConverter: org.apache.spark.ml.feature.IndexToString \u003d idxToStr_488250b1fd65\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_d465bf18ac14\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_d465bf18ac14\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 6 more fields]\n+--------------+-----+--------------------+\n|predictedLabel|label|            features|\n+--------------+-----+--------------------+\n|           0.0|  0.0|(692,[100,101,102...|\n|           0.0|  0.0|(692,[124,125,126...|\n|           0.0|  0.0|(692,[126,127,128...|\n|           0.0|  0.0|(692,[126,127,128...|\n|           0.0|  0.0|(692,[127,128,129...|\n+--------------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_4f96cbdcfa4a\n\naccuracy: Double \u003d 0.9565217391304348\nTest Error \u003d 0.04347826086956519\n\ntreeModel: org.apache.spark.ml.classification.DecisionTreeClassificationModel \u003d DecisionTreeClassificationModel (uid\u003ddtc_4b91289a1e31) of depth 2 with 5 nodes\nLearned classification tree model:\nDecisionTreeClassificationModel (uid\u003ddtc_4b91289a1e31) of depth 2 with 5 nodes\n  If (feature 406 \u003c\u003d 20.0)\n   If (feature 99 in {2.0})\n    Predict: 0.0\n   Else (feature 99 not in {2.0})\n    Predict: 1.0\n  Else (feature 406 \u003e 20.0)\n   Predict: 0.0\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904537083_459452219",
+      "id": "20170805-114217_45012045",
+      "dateCreated": "Aug 5, 2017 11:42:17 AM",
+      "dateStarted": "Aug 5, 2017 11:43:41 AM",
+      "dateFinished": "Aug 5, 2017 11:43:48 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Random forest classifier",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.classification.{RandomForestClassificationModel, RandomForestClassifier}\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\n// Load and parse the data file, converting it to a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Index labels, adding metadata to the label column.\n// Fit on whole dataset to include all labels in index.\nval labelIndexer \u003d new StringIndexer()\n  .setInputCol(\"label\")\n  .setOutputCol(\"indexedLabel\")\n  .fit(data)\n// Automatically identify categorical features, and index them.\n// Set maxCategories so features with \u003e 4 distinct values are treated as continuous.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4)\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a RandomForest model.\nval rf \u003d new RandomForestClassifier()\n  .setLabelCol(\"indexedLabel\")\n  .setFeaturesCol(\"indexedFeatures\")\n  .setNumTrees(10)\n\n// Convert indexed labels back to original labels.\nval labelConverter \u003d new IndexToString()\n  .setInputCol(\"prediction\")\n  .setOutputCol(\"predictedLabel\")\n  .setLabels(labelIndexer.labels)\n\n// Chain indexers and forest in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(labelIndexer, featureIndexer, rf, labelConverter))\n\n// Train model. This also runs the indexers.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"predictedLabel\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setLabelCol(\"indexedLabel\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"accuracy\")\nval accuracy \u003d evaluator.evaluate(predictions)\nprintln(\"Test Error \u003d \" + (1.0 - accuracy))\n\nval rfModel \u003d model.stages(2).asInstanceOf[RandomForestClassificationModel]\nprintln(\"Learned classification forest model:\\n\" + rfModel.toDebugString)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:44:41 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.classification.{RandomForestClassificationModel, RandomForestClassifier}\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlabelIndexer: org.apache.spark.ml.feature.StringIndexerModel \u003d strIdx_d225f65f46d3\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_8bc63fcc9d44\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nrf: org.apache.spark.ml.classification.RandomForestClassifier \u003d rfc_c58bdf24dd4b\n\nlabelConverter: org.apache.spark.ml.feature.IndexToString \u003d idxToStr_3075b1091a35\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_e84c7085654f\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_e84c7085654f\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 6 more fields]\n+--------------+-----+--------------------+\n|predictedLabel|label|            features|\n+--------------+-----+--------------------+\n|           0.0|  0.0|(692,[95,96,97,12...|\n|           0.0|  0.0|(692,[121,122,123...|\n|           0.0|  0.0|(692,[122,123,124...|\n|           0.0|  0.0|(692,[122,123,148...|\n|           0.0|  0.0|(692,[123,124,125...|\n+--------------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_cce418f8ea9c\n\naccuracy: Double \u003d 1.0\nTest Error \u003d 0.0\n\nrfModel: org.apache.spark.ml.classification.RandomForestClassificationModel \u003d RandomForestClassificationModel (uid\u003drfc_a95afb493491) with 10 trees\nLearned classification forest model:\nRandomForestClassificationModel (uid\u003drfc_a95afb493491) with 10 trees\n  Tree 0 (weight 1.0):\n    If (feature 552 \u003c\u003d 0.0)\n     If (feature 550 \u003c\u003d 43.0)\n      If (feature 157 \u003c\u003d 253.0)\n       Predict: 0.0\n      Else (feature 157 \u003e 253.0)\n       Predict: 1.0\n     Else (feature 550 \u003e 43.0)\n      Predict: 1.0\n    Else (feature 552 \u003e 0.0)\n     Predict: 1.0\n  Tree 1 (weight 1.0):\n    If (feature 463 \u003c\u003d 0.0)\n     If (feature 456 \u003c\u003d 0.0)\n      If (feature 490 \u003c\u003d 0.0)\n       Predict: 1.0\n      Else (feature 490 \u003e 0.0)\n       Predict: 0.0\n     Else (feature 456 \u003e 0.0)\n      Predict: 1.0\n    Else (feature 463 \u003e 0.0)\n     Predict: 0.0\n  Tree 2 (weight 1.0):\n    If (feature 540 \u003c\u003d 65.0)\n     If (feature 517 \u003c\u003d 0.0)\n      Predict: 1.0\n     Else (feature 517 \u003e 0.0)\n      Predict: 0.0\n    Else (feature 540 \u003e 65.0)\n     Predict: 1.0\n  Tree 3 (weight 1.0):\n    If (feature 576 \u003c\u003d 75.0)\n     If (feature 510 \u003c\u003d 0.0)\n      Predict: 0.0\n     Else (feature 510 \u003e 0.0)\n      Predict: 1.0\n    Else (feature 576 \u003e 75.0)\n     If (feature 601 \u003c\u003d 85.0)\n      Predict: 0.0\n     Else (feature 601 \u003e 85.0)\n      Predict: 1.0\n  Tree 4 (weight 1.0):\n    If (feature 429 \u003c\u003d 0.0)\n     If (feature 407 \u003c\u003d 0.0)\n      Predict: 1.0\n     Else (feature 407 \u003e 0.0)\n      Predict: 0.0\n    Else (feature 429 \u003e 0.0)\n     Predict: 1.0\n  Tree 5 (weight 1.0):\n    If (feature 462 \u003c\u003d 0.0)\n     If (feature 601 \u003c\u003d 0.0)\n      Predict: 0.0\n     Else (feature 601 \u003e 0.0)\n      Predict: 1.0\n    Else (feature 462 \u003e 0.0)\n     Predict: 0.0\n  Tree 6 (weight 1.0):\n    If (feature 385 \u003c\u003d 0.0)\n     If (feature 545 \u003c\u003d 2.0)\n      Predict: 1.0\n     Else (feature 545 \u003e 2.0)\n      Predict: 0.0\n    Else (feature 385 \u003e 0.0)\n     Predict: 1.0\n  Tree 7 (weight 1.0):\n    If (feature 512 \u003c\u003d 0.0)\n     If (feature 317 \u003c\u003d 0.0)\n      Predict: 0.0\n     Else (feature 317 \u003e 0.0)\n      If (feature 296 \u003c\u003d 0.0)\n       Predict: 1.0\n      Else (feature 296 \u003e 0.0)\n       Predict: 0.0\n    Else (feature 512 \u003e 0.0)\n     Predict: 1.0\n  Tree 8 (weight 1.0):\n    If (feature 462 \u003c\u003d 0.0)\n     If (feature 324 \u003c\u003d 164.0)\n      Predict: 1.0\n     Else (feature 324 \u003e 164.0)\n      Predict: 0.0\n    Else (feature 462 \u003e 0.0)\n     Predict: 0.0\n  Tree 9 (weight 1.0):\n    If (feature 301 \u003c\u003d 0.0)\n     If (feature 545 \u003c\u003d 2.0)\n      Predict: 1.0\n     Else (feature 545 \u003e 2.0)\n      If (feature 552 \u003c\u003d 0.0)\n       Predict: 0.0\n      Else (feature 552 \u003e 0.0)\n       Predict: 1.0\n    Else (feature 301 \u003e 0.0)\n     Predict: 1.0\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904595412_-43137114",
+      "id": "20170805-114315_64398386",
+      "dateCreated": "Aug 5, 2017 11:43:15 AM",
+      "dateStarted": "Aug 5, 2017 11:44:41 AM",
+      "dateFinished": "Aug 5, 2017 11:44:47 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Gradient-boosted tree classifier",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.classification.{GBTClassificationModel, GBTClassifier}\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\n// Load and parse the data file, converting it to a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Index labels, adding metadata to the label column.\n// Fit on whole dataset to include all labels in index.\nval labelIndexer \u003d new StringIndexer()\n  .setInputCol(\"label\")\n  .setOutputCol(\"indexedLabel\")\n  .fit(data)\n// Automatically identify categorical features, and index them.\n// Set maxCategories so features with \u003e 4 distinct values are treated as continuous.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4)\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a GBT model.\nval gbt \u003d new GBTClassifier()\n  .setLabelCol(\"indexedLabel\")\n  .setFeaturesCol(\"indexedFeatures\")\n  .setMaxIter(10)\n\n// Convert indexed labels back to original labels.\nval labelConverter \u003d new IndexToString()\n  .setInputCol(\"prediction\")\n  .setOutputCol(\"predictedLabel\")\n  .setLabels(labelIndexer.labels)\n\n// Chain indexers and GBT in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(labelIndexer, featureIndexer, gbt, labelConverter))\n\n// Train model. This also runs the indexers.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"predictedLabel\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setLabelCol(\"indexedLabel\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"accuracy\")\nval accuracy \u003d evaluator.evaluate(predictions)\nprintln(\"Test Error \u003d \" + (1.0 - accuracy))\n\nval gbtModel \u003d model.stages(2).asInstanceOf[GBTClassificationModel]\nprintln(\"Learned classification GBT model:\\n\" + gbtModel.toDebugString)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:45:16 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.classification.{GBTClassificationModel, GBTClassifier}\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\nimport org.apache.spark.ml.feature.{IndexToString, StringIndexer, VectorIndexer}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlabelIndexer: org.apache.spark.ml.feature.StringIndexerModel \u003d strIdx_bcf430e14065\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_a1aeb18c72a6\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\ngbt: org.apache.spark.ml.classification.GBTClassifier \u003d gbtc_6a59bf971dc9\n\nlabelConverter: org.apache.spark.ml.feature.IndexToString \u003d idxToStr_74ba6b3fadb4\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_85209c2afe52\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_85209c2afe52\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 4 more fields]\n+--------------+-----+--------------------+\n|predictedLabel|label|            features|\n+--------------+-----+--------------------+\n|           0.0|  0.0|(692,[95,96,97,12...|\n|           0.0|  0.0|(692,[121,122,123...|\n|           0.0|  0.0|(692,[123,124,125...|\n|           0.0|  0.0|(692,[123,124,125...|\n|           0.0|  0.0|(692,[123,124,125...|\n+--------------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_bcea8693647b\n\naccuracy: Double \u003d 0.8918918918918919\nTest Error \u003d 0.10810810810810811\n\ngbtModel: org.apache.spark.ml.classification.GBTClassificationModel \u003d GBTClassificationModel (uid\u003dgbtc_6a59bf971dc9) with 10 trees\nLearned classification GBT model:\nGBTClassificationModel (uid\u003dgbtc_6a59bf971dc9) with 10 trees\n  Tree 0 (weight 1.0):\n    If (feature 379 \u003c\u003d 23.0)\n     Predict: 1.0\n    Else (feature 379 \u003e 23.0)\n     Predict: -1.0\n  Tree 1 (weight 0.1):\n    If (feature 407 \u003c\u003d 0.0)\n     If (feature 400 \u003c\u003d 141.0)\n      Predict: 0.4768116880884702\n     Else (feature 400 \u003e 141.0)\n      Predict: 0.47681168808847024\n    Else (feature 407 \u003e 0.0)\n     Predict: -0.4768116880884701\n  Tree 2 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 235 \u003c\u003d 88.0)\n      If (feature 129 \u003c\u003d 0.0)\n       Predict: 0.4381935810427206\n      Else (feature 129 \u003e 0.0)\n       Predict: 0.43819358104272066\n     Else (feature 235 \u003e 88.0)\n      Predict: 0.4381935810427206\n    Else (feature 379 \u003e 23.0)\n     If (feature 379 \u003c\u003d 58.0)\n      Predict: -0.4381935810427206\n     Else (feature 379 \u003e 58.0)\n      Predict: -0.43819358104272066\n  Tree 3 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 626 \u003c\u003d 124.0)\n      If (feature 98 in {0.0})\n       Predict: 0.4051496802845983\n      Else (feature 98 not in {0.0})\n       Predict: 0.4051496802845984\n     Else (feature 626 \u003e 124.0)\n      Predict: 0.40514968028459836\n    Else (feature 379 \u003e 23.0)\n     If (feature 351 \u003c\u003d 226.0)\n      Predict: -0.4051496802845983\n     Else (feature 351 \u003e 226.0)\n      Predict: -0.40514968028459836\n  Tree 4 (weight 0.1):\n    If (feature 407 \u003c\u003d 0.0)\n     If (feature 262 \u003c\u003d 134.0)\n      If (feature 127 \u003c\u003d 51.0)\n       If (feature 158 \u003c\u003d 0.0)\n        Predict: 0.3765841318352991\n       Else (feature 158 \u003e 0.0)\n        If (feature 183 \u003c\u003d 96.0)\n         Predict: 0.3765841318352991\n        Else (feature 183 \u003e 96.0)\n         Predict: 0.37658413183529915\n      Else (feature 127 \u003e 51.0)\n       Predict: 0.3765841318352992\n     Else (feature 262 \u003e 134.0)\n      Predict: 0.3765841318352994\n    Else (feature 407 \u003e 0.0)\n     Predict: -0.3765841318352992\n  Tree 5 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 184 \u003c\u003d 48.0)\n      Predict: 0.35166478958101005\n     Else (feature 184 \u003e 48.0)\n      Predict: 0.3516647895810101\n    Else (feature 379 \u003e 23.0)\n     If (feature 545 \u003c\u003d 109.0)\n      If (feature 214 \u003c\u003d 0.0)\n       Predict: -0.35166478958101005\n      Else (feature 214 \u003e 0.0)\n       Predict: -0.35166478958101005\n     Else (feature 545 \u003e 109.0)\n      Predict: -0.3516647895810101\n  Tree 6 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 125 \u003c\u003d 0.0)\n      Predict: 0.32974984655529926\n     Else (feature 125 \u003e 0.0)\n      Predict: 0.32974984655529926\n    Else (feature 379 \u003e 23.0)\n     If (feature 349 \u003c\u003d 4.0)\n      Predict: -0.32974984655529926\n     Else (feature 349 \u003e 4.0)\n      If (feature 460 \u003c\u003d 24.0)\n       If (feature 182 \u003c\u003d 0.0)\n        Predict: -0.32974984655529926\n       Else (feature 182 \u003e 0.0)\n        Predict: -0.32974984655529926\n      Else (feature 460 \u003e 24.0)\n       Predict: -0.3297498465552993\n  Tree 7 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 183 \u003c\u003d 15.0)\n      Predict: 0.3103372455197956\n     Else (feature 183 \u003e 15.0)\n      If (feature 185 \u003c\u003d 67.0)\n       Predict: 0.3103372455197956\n      Else (feature 185 \u003e 67.0)\n       Predict: 0.31033724551979563\n    Else (feature 379 \u003e 23.0)\n     If (feature 295 \u003c\u003d 122.0)\n      If (feature 125 \u003c\u003d 1.0)\n       Predict: -0.3103372455197956\n      Else (feature 125 \u003e 1.0)\n       Predict: -0.3103372455197957\n     Else (feature 295 \u003e 122.0)\n      Predict: -0.31033724551979563\n  Tree 8 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     If (feature 237 \u003c\u003d 247.0)\n      If (feature 125 \u003c\u003d 0.0)\n       If (feature 128 \u003c\u003d 0.0)\n        Predict: 0.2930291649125433\n       Else (feature 128 \u003e 0.0)\n        Predict: 0.2930291649125433\n      Else (feature 125 \u003e 0.0)\n       Predict: 0.2930291649125434\n     Else (feature 237 \u003e 247.0)\n      Predict: 0.29302916491254344\n    Else (feature 379 \u003e 23.0)\n     If (feature 350 \u003c\u003d 205.0)\n      Predict: -0.2930291649125433\n     Else (feature 350 \u003e 205.0)\n      Predict: -0.2930291649125434\n  Tree 9 (weight 0.1):\n    If (feature 379 \u003c\u003d 23.0)\n     Predict: 0.27750666438358257\n    Else (feature 379 \u003e 23.0)\n     Predict: -0.27750666438358257\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904663244_-114792355",
+      "id": "20170805-114423_342354652",
+      "dateCreated": "Aug 5, 2017 11:44:23 AM",
+      "dateStarted": "Aug 5, 2017 11:45:16 AM",
+      "dateFinished": "Aug 5, 2017 11:45:26 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Multilayer perceptron classifier",
+      "text": "import org.apache.spark.ml.classification.MultilayerPerceptronClassifier\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\n// Load the data stored in LIBSVM format as a DataFrame.\nval data \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_multiclass_classification_data.txt\")\n\n// Split the data into train and test\nval splits \u003d data.randomSplit(Array(0.6, 0.4), seed \u003d 1234L)\nval train \u003d splits(0)\nval test \u003d splits(1)\n\n// specify layers for the neural network:\n// input layer of size 4 (features), two intermediate of size 5 and 4\n// and output of size 3 (classes)\nval layers \u003d Array[Int](4, 5, 4, 3)\n\n// create the trainer and set its parameters\nval trainer \u003d new MultilayerPerceptronClassifier()\n  .setLayers(layers)\n  .setBlockSize(128)\n  .setSeed(1234L)\n  .setMaxIter(100)\n\n// train the model\nval model \u003d trainer.fit(train)\n\n// compute accuracy on the test set\nval result \u003d model.transform(test)\nval predictionAndLabels \u003d result.select(\"prediction\", \"label\")\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setMetricName(\"accuracy\")\n\nprintln(\"Test set accuracy \u003d \" + evaluator.evaluate(predictionAndLabels))",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:46:21 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.MultilayerPerceptronClassifier\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nsplits: Array[org.apache.spark.sql.Dataset[org.apache.spark.sql.Row]] \u003d Array([label: double, features: vector], [label: double, features: vector])\n\ntrain: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\ntest: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nlayers: Array[Int] \u003d Array(4, 5, 4, 3)\n\ntrainer: org.apache.spark.ml.classification.MultilayerPerceptronClassifier \u003d mlpc_2629682fdea5\n\nmodel: org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel \u003d mlpc_2629682fdea5\n\nresult: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 1 more field]\n\npredictionAndLabels: org.apache.spark.sql.DataFrame \u003d [prediction: double, label: double]\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_c247aa68a89c\nTest set accuracy \u003d 0.9019607843137255\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904716154_1148631088",
+      "id": "20170805-114516_727912918",
+      "dateCreated": "Aug 5, 2017 11:45:16 AM",
+      "dateStarted": "Aug 5, 2017 11:46:21 AM",
+      "dateFinished": "Aug 5, 2017 11:46:26 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Linear Support Vector Machine",
+      "text": "import org.apache.spark.ml.classification.LinearSVC\n\n// Load training data\nval training \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\nval lsvc \u003d new LinearSVC()\n  .setMaxIter(10)\n  .setRegParam(0.1)\n\n// Fit the model\nval lsvcModel \u003d lsvc.fit(training)\n\n// Print the coefficients and intercept for linear svc\nprintln(s\"Coefficients: ${lsvcModel.coefficients} Intercept: ${lsvcModel.intercept}\")\n",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:49:43 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\n\n\n\u003cconsole\u003e:112: error: object LinearSVC is not a member of package org.apache.spark.ml.classification\n       import org.apache.spark.ml.classification.LinearSVC\n              ^\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904754119_-1630379569",
+      "id": "20170805-114554_2082573873",
+      "dateCreated": "Aug 5, 2017 11:45:54 AM",
+      "dateStarted": "Aug 5, 2017 11:49:43 AM",
+      "dateFinished": "Aug 5, 2017 11:49:43 AM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "One-vs-Rest classifier",
+      "text": "import org.apache.spark.ml.classification.{LogisticRegression, OneVsRest}\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\n// load data file.\nval inputData \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_multiclass_classification_data.txt\")\n\n// generate the train/test split.\nval Array(train, test) \u003d inputData.randomSplit(Array(0.8, 0.2))\n\n// instantiate the base classifier\nval classifier \u003d new LogisticRegression()\n  .setMaxIter(10)\n  .setTol(1E-6)\n  .setFitIntercept(true)\n\n// instantiate the One Vs Rest Classifier.\nval ovr \u003d new OneVsRest().setClassifier(classifier)\n\n// train the multiclass model.\nval ovrModel \u003d ovr.fit(train)\n\n// score the model on test data.\nval predictions \u003d ovrModel.transform(test)\n\n// obtain evaluator.\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setMetricName(\"accuracy\")\n\n// compute the classification error on test data.\nval accuracy \u003d evaluator.evaluate(predictions)\nprintln(s\"Test Error \u003d ${1 - accuracy}\")",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:50:27 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.{LogisticRegression, OneVsRest}\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\ninputData: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\n\ntrain: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntest: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nclassifier: org.apache.spark.ml.classification.LogisticRegression \u003d logreg_41cd392e1ddf\n\novr: org.apache.spark.ml.classification.OneVsRest \u003d oneVsRest_f7b912ab8edb\n\novrModel: org.apache.spark.ml.classification.OneVsRestModel \u003d oneVsRest_f7b912ab8edb\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 1 more field]\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_916c7c77bd3b\n\naccuracy: Double \u003d 0.975609756097561\nTest Error \u003d 0.024390243902439046\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501904808859_1126008048",
+      "id": "20170805-114648_1534104245",
+      "dateCreated": "Aug 5, 2017 11:46:48 AM",
+      "dateStarted": "Aug 5, 2017 11:50:27 AM",
+      "dateFinished": "Aug 5, 2017 11:50:32 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Naive Bayes",
+      "text": "import org.apache.spark.ml.classification.NaiveBayes\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\n// Load the data stored in LIBSVM format as a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Split the data into training and test sets (30% held out for testing)\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3), seed \u003d 1234L)\n\n// Train a NaiveBayes model.\nval model \u003d new NaiveBayes()\n  .fit(trainingData)\n\n// Select example rows to display.\nval predictions \u003d model.transform(testData)\npredictions.show()\n\n// Select (prediction, true label) and compute test error\nval evaluator \u003d new MulticlassClassificationEvaluator()\n  .setLabelCol(\"label\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"accuracy\")\nval accuracy \u003d evaluator.evaluate(predictions)\nprintln(\"Test set accuracy \u003d \" + accuracy)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:51:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.classification.NaiveBayes\n\nimport org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nmodel: org.apache.spark.ml.classification.NaiveBayesModel \u003d NaiveBayesModel (uid\u003dnb_68292ccdabf0) with 2 classes\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 3 more fields]\n+-----+--------------------+--------------------+-----------+----------+\n|label|            features|       rawPrediction|probability|prediction|\n+-----+--------------------+--------------------+-----------+----------+\n|  0.0|(692,[95,96,97,12...|[-173678.60946628...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[98,99,100,1...|[-178107.24302988...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[100,101,102...|[-100020.80519087...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[124,125,126...|[-183521.85526462...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[127,128,129...|[-183004.12461660...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[128,129,130...|[-246722.96394714...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[152,153,154...|[-208696.01108598...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[153,154,155...|[-261509.59951302...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[154,155,156...|[-217654.71748256...|  [1.0,0.0]|       0.0|\n|  0.0|(692,[181,182,183...|[-155287.07585335...|  [1.0,0.0]|       0.0|\n|  1.0|(692,[99,100,101,...|[-145981.83877498...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[100,101,102...|[-147685.13694275...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[123,124,125...|[-139521.98499849...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[124,125,126...|[-129375.46702012...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[126,127,128...|[-145809.08230799...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[127,128,129...|[-132670.15737290...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[128,129,130...|[-100206.72054749...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[129,130,131...|[-129639.09694930...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[129,130,131...|[-143628.65574273...|  [0.0,1.0]|       1.0|\n|  1.0|(692,[129,130,131...|[-129238.74023248...|  [0.0,1.0]|       1.0|\n+-----+--------------------+--------------------+-----------+----------+\nonly showing top 20 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator \u003d mcEval_deadeaae844d\n\naccuracy: Double \u003d 1.0\nTest set accuracy \u003d 1.0\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905014290_66149066",
+      "id": "20170805-115014_1025500723",
+      "dateCreated": "Aug 5, 2017 11:50:14 AM",
+      "dateStarted": "Aug 5, 2017 11:51:23 AM",
+      "dateFinished": "Aug 5, 2017 11:51:26 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Linear regression",
+      "text": "import org.apache.spark.ml.regression.LinearRegression\n\n// Load training data\nval training \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_linear_regression_data.txt\")\n\nval lr \u003d new LinearRegression()\n  .setMaxIter(10)\n  .setRegParam(0.3)\n  .setElasticNetParam(0.8)\n\n// Fit the model\nval lrModel \u003d lr.fit(training)\n\n// Print the coefficients and intercept for linear regression\nprintln(s\"Coefficients: ${lrModel.coefficients} Intercept: ${lrModel.intercept}\")\n\n// Summarize the model over the training set and print out some metrics\nval trainingSummary \u003d lrModel.summary\nprintln(s\"numIterations: ${trainingSummary.totalIterations}\")\nprintln(s\"objectiveHistory: [${trainingSummary.objectiveHistory.mkString(\",\")}]\")\ntrainingSummary.residuals.show()\nprintln(s\"RMSE: ${trainingSummary.rootMeanSquaredError}\")\nprintln(s\"r2: ${trainingSummary.r2}\")",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:52:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.regression.LinearRegression\n\ntraining: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlr: org.apache.spark.ml.regression.LinearRegression \u003d linReg_ccb8104d3f5e\n\nlrModel: org.apache.spark.ml.regression.LinearRegressionModel \u003d linReg_ccb8104d3f5e\nCoefficients: [0.0,0.32292516677405936,-0.3438548034562218,1.9156017023458414,0.05288058680386263,0.765962720459771,0.0,-0.15105392669186682,-0.21587930360904642,0.22025369188813426] Intercept: 0.1598936844239736\n\ntrainingSummary: org.apache.spark.ml.regression.LinearRegressionTrainingSummary \u003d org.apache.spark.ml.regression.LinearRegressionTrainingSummary@77d683bd\nnumIterations: 7\nobjectiveHistory: [0.49999999999999994,0.4967620357443381,0.4936361664340463,0.4936351537897608,0.4936351214177871,0.49363512062528014,0.4936351206216114]\n+--------------------+\n|           residuals|\n+--------------------+\n|  -9.889232683103197|\n|  0.5533794340053554|\n|  -5.204019455758823|\n| -20.566686715507508|\n|    -9.4497405180564|\n|  -6.909112502719486|\n|  -10.00431602969873|\n|   2.062397807050484|\n|  3.1117508432954772|\n| -15.893608229419382|\n|  -5.036284254673026|\n|   6.483215876994333|\n|  12.429497299109002|\n|  -20.32003219007654|\n| -2.0049838218725005|\n| -17.867901734183793|\n|   7.646455887420495|\n| -2.2653482182417406|\n|-0.10308920436195645|\n|  -1.380034070385301|\n+--------------------+\nonly showing top 20 rows\n\nRMSE: 10.189077167598475\nr2: 0.022861466913958184\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905067327_-776622880",
+      "id": "20170805-115107_1826539599",
+      "dateCreated": "Aug 5, 2017 11:51:07 AM",
+      "dateStarted": "Aug 5, 2017 11:52:24 AM",
+      "dateFinished": "Aug 5, 2017 11:52:27 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Generalized linear regression",
+      "text": "import org.apache.spark.ml.regression.GeneralizedLinearRegression\n\n// Load training data\nval dataset \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_linear_regression_data.txt\")\n\nval glr \u003d new GeneralizedLinearRegression()\n  .setFamily(\"gaussian\")\n  .setLink(\"identity\")\n  .setMaxIter(10)\n  .setRegParam(0.3)\n\n// Fit the model\nval model \u003d glr.fit(dataset)\n\n// Print the coefficients and intercept for generalized linear regression model\nprintln(s\"Coefficients: ${model.coefficients}\")\nprintln(s\"Intercept: ${model.intercept}\")\n\n// Summarize the model over the training set and print out some metrics\nval summary \u003d model.summary\nprintln(s\"Coefficient Standard Errors: ${summary.coefficientStandardErrors.mkString(\",\")}\")\nprintln(s\"T Values: ${summary.tValues.mkString(\",\")}\")\nprintln(s\"P Values: ${summary.pValues.mkString(\",\")}\")\nprintln(s\"Dispersion: ${summary.dispersion}\")\nprintln(s\"Null Deviance: ${summary.nullDeviance}\")\nprintln(s\"Residual Degree Of Freedom Null: ${summary.residualDegreeOfFreedomNull}\")\nprintln(s\"Deviance: ${summary.deviance}\")\nprintln(s\"Residual Degree Of Freedom: ${summary.residualDegreeOfFreedom}\")\nprintln(s\"AIC: ${summary.aic}\")\nprintln(\"Deviance Residuals: \")\nsummary.residuals().show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:53:23 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.regression.GeneralizedLinearRegression\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nglr: org.apache.spark.ml.regression.GeneralizedLinearRegression \u003d glm_8f5536459351\n\nmodel: org.apache.spark.ml.regression.GeneralizedLinearRegressionModel \u003d glm_8f5536459351\nCoefficients: [0.010541828081257216,0.8003253100560949,-0.7845165541420371,2.3679887171421914,0.5010002089857577,1.1222351159753026,-0.2926824398623296,-0.49837174323213035,-0.6035797180675657,0.6725550067187461]\nIntercept: 0.14592176145232041\n\nsummary: org.apache.spark.ml.regression.GeneralizedLinearRegressionTrainingSummary \u003d org.apache.spark.ml.regression.GeneralizedLinearRegressionTrainingSummary@1b79f84b\nCoefficient Standard Errors: 0.7950428434287478,0.8049713176546897,0.7975916824772489,0.8312649247659919,0.7945436200517938,0.8118992572197593,0.7919506385542777,0.7973378214726764,0.8300714999626418,0.7771333489686802,0.463930109648428\nT Values: 0.013259446542269243,0.9942283563442594,-0.9836067393599172,2.848657084633759,0.6305509179635714,1.382234441029355,-0.3695715687490668,-0.6250446546128238,-0.7271418403049983,0.8654306337661122,0.31453393176593286\nP Values: 0.989426199114056,0.32060241580811044,0.3257943227369877,0.004575078538306521,0.5286281628105467,0.16752945248679119,0.7118614002322872,0.5322327097421431,0.467486325282384,0.3872259825794293,0.753249430501097\nDispersion: 105.60988356821714\nNull Deviance: 53229.3654338832\nResidual Degree Of Freedom Null: 500\nDeviance: 51748.8429484264\nResidual Degree Of Freedom: 490\nAIC: 3769.1895871765314\nDeviance Residuals: \n+-------------------+\n|  devianceResiduals|\n+-------------------+\n|-10.974359174246889|\n| 0.8872320138420559|\n| -4.596541837478908|\n|-20.411667435019638|\n|-10.270419345342642|\n|-6.0156058956799905|\n|-10.663939415849267|\n| 2.1153960525024713|\n| 3.9807132379137675|\n|-17.225218272069533|\n| -4.611647633532147|\n| 6.4176669407698546|\n| 11.407137945300537|\n| -20.70176540467664|\n| -2.683748540510967|\n|-16.755494794232536|\n|  8.154668342638725|\n|-1.4355057987358848|\n|-0.6435058688185704|\n|  -1.13802589316832|\n+-------------------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905120994_-27608717",
+      "id": "20170805-115200_977014861",
+      "dateCreated": "Aug 5, 2017 11:52:00 AM",
+      "dateStarted": "Aug 5, 2017 11:53:23 AM",
+      "dateFinished": "Aug 5, 2017 11:53:28 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Decision tree regression",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\nimport org.apache.spark.ml.feature.VectorIndexer\nimport org.apache.spark.ml.regression.DecisionTreeRegressionModel\nimport org.apache.spark.ml.regression.DecisionTreeRegressor\n\n// Load the data stored in LIBSVM format as a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Automatically identify categorical features, and index them.\n// Here, we treat features with \u003e 4 distinct values as continuous.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4)\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a DecisionTree model.\nval dt \u003d new DecisionTreeRegressor()\n  .setLabelCol(\"label\")\n  .setFeaturesCol(\"indexedFeatures\")\n\n// Chain indexer and tree in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(featureIndexer, dt))\n\n// Train model. This also runs the indexer.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"prediction\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new RegressionEvaluator()\n  .setLabelCol(\"label\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"rmse\")\nval rmse \u003d evaluator.evaluate(predictions)\nprintln(\"Root Mean Squared Error (RMSE) on test data \u003d \" + rmse)\n\nval treeModel \u003d model.stages(1).asInstanceOf[DecisionTreeRegressionModel]\nprintln(\"Learned regression tree model:\\n\" + treeModel.toDebugString)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:54:08 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\n\nimport org.apache.spark.ml.feature.VectorIndexer\n\nimport org.apache.spark.ml.regression.DecisionTreeRegressionModel\n\nimport org.apache.spark.ml.regression.DecisionTreeRegressor\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_6f2d03642cb4\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\ndt: org.apache.spark.ml.regression.DecisionTreeRegressor \u003d dtr_82c10299e122\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_34828b2fced9\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_34828b2fced9\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 2 more fields]\n+----------+-----+--------------------+\n|prediction|label|            features|\n+----------+-----+--------------------+\n|       0.0|  0.0|(692,[95,96,97,12...|\n|       0.0|  0.0|(692,[100,101,102...|\n|       0.0|  0.0|(692,[122,123,124...|\n|       0.0|  0.0|(692,[123,124,125...|\n|       0.0|  0.0|(692,[124,125,126...|\n+----------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.RegressionEvaluator \u003d regEval_c1a6ae2bb294\n\nrmse: Double \u003d 0.17149858514250885\nRoot Mean Squared Error (RMSE) on test data \u003d 0.17149858514250885\n\ntreeModel: org.apache.spark.ml.regression.DecisionTreeRegressionModel \u003d DecisionTreeRegressionModel (uid\u003ddtr_82c10299e122) of depth 2 with 5 nodes\nLearned regression tree model:\nDecisionTreeRegressionModel (uid\u003ddtr_82c10299e122) of depth 2 with 5 nodes\n  If (feature 406 \u003c\u003d 72.0)\n   If (feature 99 in {0.0,3.0})\n    Predict: 0.0\n   Else (feature 99 not in {0.0,3.0})\n    Predict: 1.0\n  Else (feature 406 \u003e 72.0)\n   Predict: 1.0\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905188565_221231876",
+      "id": "20170805-115308_174755093",
+      "dateCreated": "Aug 5, 2017 11:53:08 AM",
+      "dateStarted": "Aug 5, 2017 11:54:08 AM",
+      "dateFinished": "Aug 5, 2017 11:54:12 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Random forest regression",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\nimport org.apache.spark.ml.feature.VectorIndexer\nimport org.apache.spark.ml.regression.{RandomForestRegressionModel, RandomForestRegressor}\n\n// Load and parse the data file, converting it to a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Automatically identify categorical features, and index them.\n// Set maxCategories so features with \u003e 4 distinct values are treated as continuous.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4)\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a RandomForest model.\nval rf \u003d new RandomForestRegressor()\n  .setLabelCol(\"label\")\n  .setFeaturesCol(\"indexedFeatures\")\n\n// Chain indexer and forest in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(featureIndexer, rf))\n\n// Train model. This also runs the indexer.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"prediction\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new RegressionEvaluator()\n  .setLabelCol(\"label\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"rmse\")\nval rmse \u003d evaluator.evaluate(predictions)\nprintln(\"Root Mean Squared Error (RMSE) on test data \u003d \" + rmse)\n\nval rfModel \u003d model.stages(1).asInstanceOf[RandomForestRegressionModel]\nprintln(\"Learned regression forest model:\\n\" + rfModel.toDebugString)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:54:55 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\n\nimport org.apache.spark.ml.feature.VectorIndexer\n\nimport org.apache.spark.ml.regression.{RandomForestRegressionModel, RandomForestRegressor}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_65f9b3f1e175\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nrf: org.apache.spark.ml.regression.RandomForestRegressor \u003d rfr_8323f26dd26c\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_55493bfacf7a\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_55493bfacf7a\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 2 more fields]\n+----------+-----+--------------------+\n|prediction|label|            features|\n+----------+-----+--------------------+\n|      0.05|  0.0|(692,[121,122,123...|\n|      0.05|  0.0|(692,[123,124,125...|\n|       0.0|  0.0|(692,[124,125,126...|\n|       0.0|  0.0|(692,[126,127,128...|\n|       0.0|  0.0|(692,[126,127,128...|\n+----------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.RegressionEvaluator \u003d regEval_b0ee9e6e8437\n\nrmse: Double \u003d 0.1857851690320249\nRoot Mean Squared Error (RMSE) on test data \u003d 0.1857851690320249\n\nrfModel: org.apache.spark.ml.regression.RandomForestRegressionModel \u003d RandomForestRegressionModel (uid\u003drfr_63a33a6e88ba) with 20 trees\nLearned regression forest model:\nRandomForestRegressionModel (uid\u003drfr_63a33a6e88ba) with 20 trees\n  Tree 0 (weight 1.0):\n    If (feature 433 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 433 \u003e 0.0)\n     Predict: 1.0\n  Tree 1 (weight 1.0):\n    If (feature 490 \u003c\u003d 31.0)\n     Predict: 0.0\n    Else (feature 490 \u003e 31.0)\n     Predict: 1.0\n  Tree 2 (weight 1.0):\n    If (feature 462 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 462 \u003e 0.0)\n     Predict: 1.0\n  Tree 3 (weight 1.0):\n    If (feature 461 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 461 \u003e 0.0)\n     Predict: 1.0\n  Tree 4 (weight 1.0):\n    If (feature 461 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 461 \u003e 0.0)\n     Predict: 1.0\n  Tree 5 (weight 1.0):\n    If (feature 405 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 405 \u003e 0.0)\n     Predict: 1.0\n  Tree 6 (weight 1.0):\n    If (feature 490 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 490 \u003e 0.0)\n     Predict: 1.0\n  Tree 7 (weight 1.0):\n    If (feature 461 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 461 \u003e 0.0)\n     Predict: 1.0\n  Tree 8 (weight 1.0):\n    If (feature 406 \u003c\u003d 72.0)\n     Predict: 0.0\n    Else (feature 406 \u003e 72.0)\n     Predict: 1.0\n  Tree 9 (weight 1.0):\n    If (feature 490 \u003c\u003d 31.0)\n     Predict: 0.0\n    Else (feature 490 \u003e 31.0)\n     Predict: 1.0\n  Tree 10 (weight 1.0):\n    If (feature 406 \u003c\u003d 72.0)\n     Predict: 0.0\n    Else (feature 406 \u003e 72.0)\n     Predict: 1.0\n  Tree 11 (weight 1.0):\n    If (feature 406 \u003c\u003d 72.0)\n     Predict: 0.0\n    Else (feature 406 \u003e 72.0)\n     Predict: 1.0\n  Tree 12 (weight 1.0):\n    If (feature 462 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 462 \u003e 0.0)\n     Predict: 1.0\n  Tree 13 (weight 1.0):\n    If (feature 462 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 462 \u003e 0.0)\n     Predict: 1.0\n  Tree 14 (weight 1.0):\n    If (feature 489 \u003c\u003d 11.0)\n     If (feature 232 \u003c\u003d 212.0)\n      Predict: 0.0\n     Else (feature 232 \u003e 212.0)\n      Predict: 1.0\n    Else (feature 489 \u003e 11.0)\n     Predict: 1.0\n  Tree 15 (weight 1.0):\n    If (feature 351 \u003c\u003d 2.0)\n     Predict: 0.0\n    Else (feature 351 \u003e 2.0)\n     If (feature 497 \u003c\u003d 0.0)\n      Predict: 1.0\n     Else (feature 497 \u003e 0.0)\n      Predict: 0.0\n  Tree 16 (weight 1.0):\n    If (feature 434 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 434 \u003e 0.0)\n     Predict: 1.0\n  Tree 17 (weight 1.0):\n    If (feature 378 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 378 \u003e 0.0)\n     Predict: 1.0\n  Tree 18 (weight 1.0):\n    If (feature 434 \u003c\u003d 0.0)\n     Predict: 0.0\n    Else (feature 434 \u003e 0.0)\n     Predict: 1.0\n  Tree 19 (weight 1.0):\n    If (feature 490 \u003c\u003d 31.0)\n     Predict: 0.0\n    Else (feature 490 \u003e 31.0)\n     Predict: 1.0\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905231607_1308409675",
+      "id": "20170805-115351_518449447",
+      "dateCreated": "Aug 5, 2017 11:53:51 AM",
+      "dateStarted": "Aug 5, 2017 11:54:55 AM",
+      "dateFinished": "Aug 5, 2017 11:54:58 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Gradient-boosted tree regression",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\nimport org.apache.spark.ml.feature.VectorIndexer\nimport org.apache.spark.ml.regression.{GBTRegressionModel, GBTRegressor}\n\n// Load and parse the data file, converting it to a DataFrame.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_libsvm_data.txt\")\n\n// Automatically identify categorical features, and index them.\n// Set maxCategories so features with \u003e 4 distinct values are treated as continuous.\nval featureIndexer \u003d new VectorIndexer()\n  .setInputCol(\"features\")\n  .setOutputCol(\"indexedFeatures\")\n  .setMaxCategories(4)\n  .fit(data)\n\n// Split the data into training and test sets (30% held out for testing).\nval Array(trainingData, testData) \u003d data.randomSplit(Array(0.7, 0.3))\n\n// Train a GBT model.\nval gbt \u003d new GBTRegressor()\n  .setLabelCol(\"label\")\n  .setFeaturesCol(\"indexedFeatures\")\n  .setMaxIter(10)\n\n// Chain indexer and GBT in a Pipeline.\nval pipeline \u003d new Pipeline()\n  .setStages(Array(featureIndexer, gbt))\n\n// Train model. This also runs the indexer.\nval model \u003d pipeline.fit(trainingData)\n\n// Make predictions.\nval predictions \u003d model.transform(testData)\n\n// Select example rows to display.\npredictions.select(\"prediction\", \"label\", \"features\").show(5)\n\n// Select (prediction, true label) and compute test error.\nval evaluator \u003d new RegressionEvaluator()\n  .setLabelCol(\"label\")\n  .setPredictionCol(\"prediction\")\n  .setMetricName(\"rmse\")\nval rmse \u003d evaluator.evaluate(predictions)\nprintln(\"Root Mean Squared Error (RMSE) on test data \u003d \" + rmse)\n\nval gbtModel \u003d model.stages(1).asInstanceOf[GBTRegressionModel]\nprintln(\"Learned regression GBT model:\\n\" + gbtModel.toDebugString)\n",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:55:59 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\n\nimport org.apache.spark.ml.feature.VectorIndexer\n\nimport org.apache.spark.ml.regression.{GBTRegressionModel, GBTRegressor}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nfeatureIndexer: org.apache.spark.ml.feature.VectorIndexerModel \u003d vecIdx_659b81d2b33a\n\n\ntrainingData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntestData: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\ngbt: org.apache.spark.ml.regression.GBTRegressor \u003d gbtr_f78d967ecb03\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_10934054b35f\n\nmodel: org.apache.spark.ml.PipelineModel \u003d pipeline_10934054b35f\n\npredictions: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 2 more fields]\n+----------+-----+--------------------+\n|prediction|label|            features|\n+----------+-----+--------------------+\n|       0.0|  0.0|(692,[95,96,97,12...|\n|       0.0|  0.0|(692,[98,99,100,1...|\n|       0.0|  0.0|(692,[121,122,123...|\n|       0.0|  0.0|(692,[123,124,125...|\n|       0.0|  0.0|(692,[124,125,126...|\n+----------+-----+--------------------+\nonly showing top 5 rows\n\n\nevaluator: org.apache.spark.ml.evaluation.RegressionEvaluator \u003d regEval_5bc4e3c95323\n\nrmse: Double \u003d 0.2672612419124244\nRoot Mean Squared Error (RMSE) on test data \u003d 0.2672612419124244\n\ngbtModel: org.apache.spark.ml.regression.GBTRegressionModel \u003d GBTRegressionModel (uid\u003dgbtr_f78d967ecb03) with 10 trees\nLearned regression GBT model:\nGBTRegressionModel (uid\u003dgbtr_f78d967ecb03) with 10 trees\n  Tree 0 (weight 1.0):\n    If (feature 406 \u003c\u003d 20.0)\n     Predict: 0.0\n    Else (feature 406 \u003e 20.0)\n     Predict: 1.0\n  Tree 1 (weight 0.1):\n    Predict: 0.0\n  Tree 2 (weight 0.1):\n    Predict: 0.0\n  Tree 3 (weight 0.1):\n    Predict: 0.0\n  Tree 4 (weight 0.1):\n    Predict: 0.0\n  Tree 5 (weight 0.1):\n    Predict: 0.0\n  Tree 6 (weight 0.1):\n    Predict: 0.0\n  Tree 7 (weight 0.1):\n    Predict: 0.0\n  Tree 8 (weight 0.1):\n    Predict: 0.0\n  Tree 9 (weight 0.1):\n    Predict: 0.0\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905274381_1485855539",
+      "id": "20170805-115434_564585810",
+      "dateCreated": "Aug 5, 2017 11:54:34 AM",
+      "dateStarted": "Aug 5, 2017 11:55:59 AM",
+      "dateFinished": "Aug 5, 2017 11:56:06 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Survival regression",
+      "text": "import org.apache.spark.ml.linalg.Vectors\nimport org.apache.spark.ml.regression.AFTSurvivalRegression\n\nval training \u003d spark.createDataFrame(Seq(\n  (1.218, 1.0, Vectors.dense(1.560, -0.605)),\n  (2.949, 0.0, Vectors.dense(0.346, 2.158)),\n  (3.627, 0.0, Vectors.dense(1.380, 0.231)),\n  (0.273, 1.0, Vectors.dense(0.520, 1.151)),\n  (4.199, 0.0, Vectors.dense(0.795, -0.226))\n)).toDF(\"label\", \"censor\", \"features\")\nval quantileProbabilities \u003d Array(0.3, 0.6)\nval aft \u003d new AFTSurvivalRegression()\n  .setQuantileProbabilities(quantileProbabilities)\n  .setQuantilesCol(\"quantiles\")\n\nval model \u003d aft.fit(training)\n\n// Print the coefficients, intercept and scale parameter for AFT survival regression\nprintln(s\"Coefficients: ${model.coefficients}\")\nprintln(s\"Intercept: ${model.intercept}\")\nprintln(s\"Scale: ${model.scale}\")\nmodel.transform(training).show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:56:44 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.linalg.Vectors\n\nimport org.apache.spark.ml.regression.AFTSurvivalRegression\n\ntraining: org.apache.spark.sql.DataFrame \u003d [label: double, censor: double ... 1 more field]\n\nquantileProbabilities: Array[Double] \u003d Array(0.3, 0.6)\n\naft: org.apache.spark.ml.regression.AFTSurvivalRegression \u003d aftSurvReg_31f2dda3c7e5\n\nmodel: org.apache.spark.ml.regression.AFTSurvivalRegressionModel \u003d aftSurvReg_31f2dda3c7e5\nCoefficients: [-0.49631114666506915,0.19844437699933598]\nIntercept: 2.638094615104007\nScale: 1.5472345574364688\n+-----+------+--------------+------------------+---------------------------------------+\n|label|censor|features      |prediction        |quantiles                              |\n+-----+------+--------------+------------------+---------------------------------------+\n|1.218|1.0   |[1.56,-0.605] |5.718979487634986 |[1.1603238947151628,4.995456010274752] |\n|2.949|0.0   |[0.346,2.158] |18.076521181495476|[3.6675458454717704,15.78961186627775] |\n|3.627|0.0   |[1.38,0.231]  |7.381861804239099 |[1.4977061305190842,6.447962612338963] |\n|0.273|1.0   |[0.52,1.151]  |13.577612501425332|[2.7547621481506965,11.859872224069742]|\n|4.199|0.0   |[0.795,-0.226]|9.013097744073871 |[1.8286676321297781,7.872826505878406] |\n+-----+------+--------------+------------------+---------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905345931_-508839290",
+      "id": "20170805-115545_1477864128",
+      "dateCreated": "Aug 5, 2017 11:55:45 AM",
+      "dateStarted": "Aug 5, 2017 11:56:44 AM",
+      "dateFinished": "Aug 5, 2017 11:56:46 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Isotonic regression",
+      "text": "import org.apache.spark.ml.regression.IsotonicRegression\n\n// Loads data.\nval dataset \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_isotonic_regression_libsvm_data.txt\")\n\n// Trains an isotonic regression model.\nval ir \u003d new IsotonicRegression()\nval model \u003d ir.fit(dataset)\n\nprintln(s\"Boundaries in increasing order: ${model.boundaries}\\n\")\nprintln(s\"Predictions associated with the boundaries: ${model.predictions}\\n\")\n\n// Makes predictions.\nmodel.transform(dataset).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 11:58:34 AM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.regression.IsotonicRegression\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nir: org.apache.spark.ml.regression.IsotonicRegression \u003d isoReg_4a99b6168257\n\nmodel: org.apache.spark.ml.regression.IsotonicRegressionModel \u003d isoReg_4a99b6168257\nBoundaries in increasing order: [0.01,0.17,0.18,0.27,0.28,0.29,0.3,0.31,0.34,0.35,0.36,0.41,0.42,0.71,0.72,0.74,0.75,0.76,0.77,0.78,0.79,0.8,0.81,0.82,0.83,0.84,0.85,0.86,0.87,0.88,0.89,1.0]\n\nPredictions associated with the boundaries: [0.15715271294117658,0.15715271294117658,0.18913819599999995,0.18913819599999995,0.20040796,0.29576747,0.43396226,0.5081591025000001,0.5081591025000001,0.54156043,0.5504844466666667,0.5504844466666667,0.5639299670000005,0.5639299670000005,0.5660377366666668,0.5660377366666668,0.56603774,0.57929628,0.64762876,0.66241713,0.67210607,0.67210607,0.674655785,0.674655785,0.73890872,0.73992861,0.84242733,0.89673636,0.89673636,0.90719021,0.9272055075000002,0.9272055075000002]\n\n+----------+--------------+-------------------+\n|     label|      features|         prediction|\n+----------+--------------+-------------------+\n|0.24579296|(1,[0],[0.01])|0.15715271294117658|\n|0.28505864|(1,[0],[0.02])|0.15715271294117658|\n|0.31208567|(1,[0],[0.03])|0.15715271294117658|\n|0.35900051|(1,[0],[0.04])|0.15715271294117658|\n|0.35747068|(1,[0],[0.05])|0.15715271294117658|\n|0.16675166|(1,[0],[0.06])|0.15715271294117658|\n|0.17491076|(1,[0],[0.07])|0.15715271294117658|\n| 0.0418154|(1,[0],[0.08])|0.15715271294117658|\n|0.04793473|(1,[0],[0.09])|0.15715271294117658|\n|0.03926568| (1,[0],[0.1])|0.15715271294117658|\n|0.12952575|(1,[0],[0.11])|0.15715271294117658|\n|       0.0|(1,[0],[0.12])|0.15715271294117658|\n|0.01376849|(1,[0],[0.13])|0.15715271294117658|\n|0.13105558|(1,[0],[0.14])|0.15715271294117658|\n|0.08873024|(1,[0],[0.15])|0.15715271294117658|\n|0.12595614|(1,[0],[0.16])|0.15715271294117658|\n|0.15247323|(1,[0],[0.17])|0.15715271294117658|\n|0.25956145|(1,[0],[0.18])|0.18913819599999995|\n|0.20040796|(1,[0],[0.19])|0.18913819599999995|\n|0.19581846| (1,[0],[0.2])|0.18913819599999995|\n+----------+--------------+-------------------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905404844_1050086632",
+      "id": "20170805-115644_1477214146",
+      "dateCreated": "Aug 5, 2017 11:56:44 AM",
+      "dateStarted": "Aug 5, 2017 11:58:34 AM",
+      "dateFinished": "Aug 5, 2017 11:58:35 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "K-means",
+      "text": "import org.apache.spark.ml.clustering.KMeans\n\n// Loads data.\nval dataset \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_kmeans_data.txt\")\n\n// Trains a k-means model.\nval kmeans \u003d new KMeans().setK(2).setSeed(1L)\nval model \u003d kmeans.fit(dataset)\n\n// Evaluate clustering by computing Within Set Sum of Squared Errors.\nval WSSSE \u003d model.computeCost(dataset)\nprintln(s\"Within Set Sum of Squared Errors \u003d $WSSSE\")\n\n// Shows the result.\nprintln(\"Cluster Centers: \")\nmodel.clusterCenters.foreach(println)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:03:21 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.clustering.KMeans\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nkmeans: org.apache.spark.ml.clustering.KMeans \u003d kmeans_e2fd4062aa66\n\nmodel: org.apache.spark.ml.clustering.KMeansModel \u003d kmeans_e2fd4062aa66\n\nWSSSE: Double \u003d 0.11999999999994547\nWithin Set Sum of Squared Errors \u003d 0.11999999999994547\nCluster Centers: \n[0.1,0.1,0.1]\n[9.1,9.1,9.1]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905440593_560548113",
+      "id": "20170805-115720_2044955687",
+      "dateCreated": "Aug 5, 2017 11:57:20 AM",
+      "dateStarted": "Aug 5, 2017 12:03:21 PM",
+      "dateFinished": "Aug 5, 2017 12:03:23 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Latent Dirichlet allocation (LDA)",
+      "text": "import org.apache.spark.ml.clustering.LDA\n\n// Loads data.\nval dataset \u003d spark.read.format(\"libsvm\")\n  .load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_lda_libsvm_data.txt\")\n\n// Trains a LDA model.\nval lda \u003d new LDA().setK(10).setMaxIter(10)\nval model \u003d lda.fit(dataset)\n\nval ll \u003d model.logLikelihood(dataset)\nval lp \u003d model.logPerplexity(dataset)\nprintln(s\"The lower bound on the log likelihood of the entire corpus: $ll\")\nprintln(s\"The upper bound on perplexity: $lp\")\n\n// Describe topics.\nval topics \u003d model.describeTopics(3)\nprintln(\"The topics described by their top-weighted terms:\")\ntopics.show(false)\n\n// Shows the result.\nval transformed \u003d model.transform(dataset)\ntransformed.show(false)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:03:58 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.clustering.LDA\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nlda: org.apache.spark.ml.clustering.LDA \u003d lda_6adade6167aa\n\nmodel: org.apache.spark.ml.clustering.LDAModel \u003d lda_6adade6167aa\n\nll: Double \u003d -841.5044630678531\n\nlp: Double \u003d 3.2376643832788328\nThe lower bound on the log likelihood of the entire corpus: -841.5044630678531\nThe upper bound on perplexity: 3.2376643832788328\n\ntopics: org.apache.spark.sql.DataFrame \u003d [topic: int, termIndices: array\u003cint\u003e ... 1 more field]\nThe topics described by their top-weighted terms:\n+-----+-----------+---------------------------------------------------------------+\n|topic|termIndices|termWeights                                                    |\n+-----+-----------+---------------------------------------------------------------+\n|0    |[2, 5, 7]  |[0.10606441785152677, 0.10570106737291407, 0.1043039017911894] |\n|1    |[1, 6, 2]  |[0.10185078330697779, 0.09816924136522151, 0.09632455347733558]|\n|2    |[1, 9, 4]  |[0.10597705562220948, 0.09750947011550362, 0.09654669260598872]|\n|3    |[0, 4, 8]  |[0.10270698376763594, 0.09842850173348373, 0.0981566411062596] |\n|4    |[9, 6, 4]  |[0.10452968226493004, 0.1041490376344371, 0.10103989134684303] |\n|5    |[10, 6, 9] |[0.2187876811406586, 0.14074681595632457, 0.12767399434544177] |\n|6    |[3, 7, 4]  |[0.11638316021406872, 0.09901763897401522, 0.09795374111269362]|\n|7    |[4, 0, 2]  |[0.10855455833994515, 0.1033427129944703, 0.10034944281889883] |\n|8    |[0, 7, 8]  |[0.11008004098524422, 0.09919724236300652, 0.09810905351443679]|\n|9    |[9, 6, 8]  |[0.10106113658484203, 0.10013291564864656, 0.09769280655823104]|\n+-----+-----------+---------------------------------------------------------------+\n\n\ntransformed: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector ... 1 more field]\n+-----+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n|label|features                                                       |topicDistribution                                                                                                                                                                                                        |\n+-----+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n|0.0  |(11,[0,1,2,4,5,6,7,10],[1.0,2.0,6.0,2.0,3.0,1.0,1.0,3.0])      |[0.6989028017729567,0.004825989066541598,0.004825953918067898,0.004825954148497684,0.004825928256568515,0.26248957294957315,0.00482595499058003,0.004826025769112574,0.004825893186671423,0.00482592594143037]           |\n|1.0  |(11,[0,1,3,4,7,10],[1.0,3.0,1.0,3.0,2.0,1.0])                  |[0.00805072818211971,0.008050328236732508,0.008050317651509153,0.008050709794063358,0.008050222664447687,0.9275451635731485,0.008050733452546779,0.008050740138336699,0.00805068040424974,0.008050375902845854]          |\n|2.0  |(11,[0,1,2,5,6,8,9],[1.0,4.0,1.0,4.0,9.0,1.0,2.0])             |[0.004196214172318774,0.0041961664503767865,0.004196055815074675,0.004196139033717962,0.004195975549078342,0.9622353991729736,0.004196077475793646,0.004196040686170401,0.004195888871452301,0.004196042773043541]       |\n|3.0  |(11,[0,1,3,6,8,9,10],[2.0,1.0,3.0,5.0,2.0,3.0,9.0])            |[0.0037108219868795802,0.0037108655129746934,0.0037108470950158417,0.0037108878888605615,0.003710907100104535,0.9666021927611818,0.003710872765686096,0.0037108373635747886,0.003710886027754203,0.0037108814979678684]  |\n|4.0  |(11,[0,1,2,3,4,6,9,10],[3.0,1.0,1.0,9.0,3.0,2.0,1.0,3.0])      |[0.004020614629853423,0.004020653664200237,0.004020644827196906,0.004020676227843221,0.004020772548170429,0.9638138675867984,0.004020843503350798,0.004020655293711461,0.004020667174966784,0.004020604543908193]        |\n|5.0  |(11,[0,1,3,4,5,6,7,8,9],[4.0,2.0,3.0,4.0,5.0,1.0,1.0,1.0,4.0]) |[0.003711291633335634,0.003711268500389049,0.0037112520288053895,0.5958759686928774,0.003711277168739334,0.374433883283936,0.0037112922579516983,0.003711296300934584,0.003711258392371197,0.0037112117406596836]        |\n|6.0  |(11,[0,1,3,6,8,9,10],[2.0,1.0,3.0,5.0,2.0,2.0,9.0])            |[0.0038593958527605673,0.003859447187170983,0.0038594232353593746,0.0038594613122880468,0.0038594922035040656,0.9652649758585697,0.0038594564247217905,0.0038594133601157796,0.0038594774301866663,0.0038594571353228867]|\n|7.0  |(11,[0,1,2,3,4,5,6,9,10],[1.0,1.0,1.0,9.0,2.0,1.0,2.0,1.0,3.0])|[0.004386712544876621,0.004386715373890153,0.004386697463865548,0.00438672253290062,0.004386733364896757,0.9605195751833845,0.004386873013360408,0.004386665058625841,0.00438665271246653,0.004386652751733114]          |\n|8.0  |(11,[0,1,3,4,5,6,7],[4.0,4.0,3.0,4.0,2.0,1.0,3.0])             |[0.00438681418163656,0.004386818332121152,0.004386775915960494,0.004386892977512178,0.0043867770379717435,0.3374655650013184,0.6274399320423288,0.004386861870657225,0.004386835097468957,0.004386727543024369]          |\n|9.0  |(11,[0,1,2,4,6,8,9,10],[2.0,8.0,2.0,3.0,2.0,2.0,7.0,2.0])      |[0.003326816491342236,0.003326825993030546,0.0033268550460721774,0.003326811300858139,0.003327078430004685,0.9700583625410845,0.003326772689419335,0.003326860673051497,0.0033268079253526792,0.003326808909784156]      |\n|10.0 |(11,[0,1,2,3,5,6,9,10],[1.0,1.0,1.0,9.0,2.0,2.0,3.0,3.0])      |[0.004195892392001389,0.004195869051045969,0.004195829738547563,0.004195855809652564,0.0041958216977861,0.9622374072046053,0.00419597774013597,0.00419576950110108,0.004195761370438641,0.004195815494685565]            |\n|11.0 |(11,[0,1,4,5,6,7,9],[4.0,1.0,4.0,5.0,1.0,3.0,1.0])             |[0.004826083654222972,0.004825993751106577,0.004825934311733138,0.004826092099474725,0.0048259511957541735,0.005421131667277989,0.004825986294310589,0.9559709332891935,0.004825987346483362,0.004825906390443083]       |\n+-----+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905788703_1813196943",
+      "id": "20170805-120308_734644770",
+      "dateCreated": "Aug 5, 2017 12:03:08 PM",
+      "dateStarted": "Aug 5, 2017 12:03:58 PM",
+      "dateFinished": "Aug 5, 2017 12:04:01 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Bisecting k-means",
+      "text": "import org.apache.spark.ml.clustering.BisectingKMeans\n\n// Loads data.\nval dataset \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_kmeans_data.txt\")\n\n// Trains a bisecting k-means model.\nval bkm \u003d new BisectingKMeans().setK(2).setSeed(1)\nval model \u003d bkm.fit(dataset)\n\n// Evaluate clustering.\nval cost \u003d model.computeCost(dataset)\nprintln(s\"Within Set Sum of Squared Errors \u003d $cost\")\n\n// Shows the result.\nprintln(\"Cluster Centers: \")\nval centers \u003d model.clusterCenters\ncenters.foreach(println)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:04:56 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.clustering.BisectingKMeans\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\nbkm: org.apache.spark.ml.clustering.BisectingKMeans \u003d bisecting-kmeans_550aefce25aa\n\nmodel: org.apache.spark.ml.clustering.BisectingKMeansModel \u003d bisecting-kmeans_550aefce25aa\n\ncost: Double \u003d 0.11999999999994547\nWithin Set Sum of Squared Errors \u003d 0.11999999999994547\nCluster Centers: \n\ncenters: Array[org.apache.spark.ml.linalg.Vector] \u003d Array([0.1,0.1,0.1], [9.1,9.1,9.1])\n[0.1,0.1,0.1]\n[9.1,9.1,9.1]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905824092_681290870",
+      "id": "20170805-120344_182858927",
+      "dateCreated": "Aug 5, 2017 12:03:44 PM",
+      "dateStarted": "Aug 5, 2017 12:04:56 PM",
+      "dateFinished": "Aug 5, 2017 12:04:58 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Gaussian Mixture Model (GMM)",
+      "text": "import org.apache.spark.ml.clustering.GaussianMixture\n\n// Loads data\nval dataset \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_kmeans_data.txt\")\n\n// Trains Gaussian Mixture Model\nval gmm \u003d new GaussianMixture()\n  .setK(2)\nval model \u003d gmm.fit(dataset)\n\n// output parameters of mixture model model\nfor (i \u003c- 0 until model.getK) {\n  println(s\"Gaussian $i:\\nweight\u003d${model.weights(i)}\\n\" +\n      s\"mu\u003d${model.gaussians(i).mean}\\nsigma\u003d\\n${model.gaussians(i).cov}\\n\")\n}",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:05:41 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.clustering.GaussianMixture\n\ndataset: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\ngmm: org.apache.spark.ml.clustering.GaussianMixture \u003d GaussianMixture_e894f739797d\n\nmodel: org.apache.spark.ml.clustering.GaussianMixtureModel \u003d GaussianMixture_e894f739797d\nGaussian 0:\nweight\u003d0.5\nmu\u003d[0.10000000000001552,0.10000000000001552,0.10000000000001552]\nsigma\u003d\n0.006666666666806455  0.006666666666806455  0.006666666666806455  \n0.006666666666806455  0.006666666666806455  0.006666666666806455  \n0.006666666666806455  0.006666666666806455  0.006666666666806455  \n\nGaussian 1:\nweight\u003d0.5\nmu\u003d[9.099999999999985,9.099999999999985,9.099999999999985]\nsigma\u003d\n0.006666666666783764  0.006666666666783764  0.006666666666783764  \n0.006666666666783764  0.006666666666783764  0.006666666666783764  \n0.006666666666783764  0.006666666666783764  0.006666666666783764  \n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905875270_-264360630",
+      "id": "20170805-120435_1077418376",
+      "dateCreated": "Aug 5, 2017 12:04:35 PM",
+      "dateStarted": "Aug 5, 2017 12:05:41 PM",
+      "dateFinished": "Aug 5, 2017 12:05:42 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "ALS",
+      "text": "import org.apache.spark.ml.evaluation.RegressionEvaluator\nimport org.apache.spark.ml.recommendation.ALS\n\ncase class Rating(userId: Int, movieId: Int, rating: Float, timestamp: Long)\ndef parseRating(str: String): Rating \u003d {\n  val fields \u003d str.split(\"::\")\n  assert(fields.size \u003d\u003d 4)\n  Rating(fields(0).toInt, fields(1).toInt, fields(2).toFloat, fields(3).toLong)\n}\n\nval ratings \u003d spark.read.textFile(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/als/sample_movielens_ratings.txt\")\n  .map(parseRating)\n  .toDF()\nval Array(training, test) \u003d ratings.randomSplit(Array(0.8, 0.2))\n\n// Build the recommendation model using ALS on the training data\nval als \u003d new ALS()\n  .setMaxIter(5)\n  .setRegParam(0.01)\n  .setUserCol(\"userId\")\n  .setItemCol(\"movieId\")\n  .setRatingCol(\"rating\")\nval model \u003d als.fit(training)\n\nval predictions \u003d model.transform(test)\n\nval evaluator \u003d new RegressionEvaluator()\n  .setMetricName(\"rmse\")\n  .setLabelCol(\"rating\")\n  .setPredictionCol(\"prediction\")\nval rmse \u003d evaluator.evaluate(predictions)\nprintln(s\"Root-mean-square error \u003d $rmse\")\n\n// Generate top 10 movie recommendations for each user\nval userRecs \u003d model.recommendForAllUsers(10)\n// Generate top 10 user recommendations for each movie\nval movieRecs \u003d model.recommendForAllItems(10)",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:08:40 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\n\nimport org.apache.spark.ml.recommendation.ALS\n\ndefined class Rating\n\nparseRating: (str: String)Rating\n\nratings: org.apache.spark.sql.DataFrame \u003d [userId: int, movieId: int ... 2 more fields]\n\n\ntraining: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [userId: int, movieId: int ... 2 more fields]\ntest: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [userId: int, movieId: int ... 2 more fields]\n\nals: org.apache.spark.ml.recommendation.ALS \u003d als_c0d0e6a27695\n\nmodel: org.apache.spark.ml.recommendation.ALSModel \u003d als_c0d0e6a27695\n\npredictions: org.apache.spark.sql.DataFrame \u003d [userId: int, movieId: int ... 3 more fields]\n\nevaluator: org.apache.spark.ml.evaluation.RegressionEvaluator \u003d regEval_853df050270d\n\nrmse: Double \u003d 1.9064471328983108\nRoot-mean-square error \u003d 1.9064471328983108\n\n\n\n\u003cconsole\u003e:176: error: value recommendForAllUsers is not a member of org.apache.spark.ml.recommendation.ALSModel\n       val userRecs \u003d model.recommendForAllUsers(10)\n                            ^\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501905930123_237644740",
+      "id": "20170805-120530_283614697",
+      "dateCreated": "Aug 5, 2017 12:05:30 PM",
+      "dateStarted": "Aug 5, 2017 12:08:40 PM",
+      "dateFinished": "Aug 5, 2017 12:08:48 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Frequent Pattern Mining",
+      "text": "import org.apache.spark.ml.fpm.FPGrowth\n\nval dataset \u003d spark.createDataset(Seq(\n  \"1 2 5\",\n  \"1 2 3 5\",\n  \"1 2\")\n).map(t \u003d\u003e t.split(\" \")).toDF(\"items\")\n\nval fpgrowth \u003d new FPGrowth().setItemsCol(\"items\").setMinSupport(0.5).setMinConfidence(0.6)\nval model \u003d fpgrowth.fit(dataset)\n\n// Display frequent itemsets.\nmodel.freqItemsets.show()\n\n// Display generated association rules.\nmodel.associationRules.show()\n\n// transform examines the input items against all the association rules and summarize the\n// consequents as prediction\nmodel.transform(dataset).show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:12:02 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\n\n\n\u003cconsole\u003e:170: error: object fpm is not a member of package org.apache.spark.ml\n       import org.apache.spark.ml.fpm.FPGrowth\n                                  ^\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501906058299_391729834",
+      "id": "20170805-120738_1223265220",
+      "dateCreated": "Aug 5, 2017 12:07:38 PM",
+      "dateStarted": "Aug 5, 2017 12:12:02 PM",
+      "dateFinished": "Aug 5, 2017 12:12:02 PM",
+      "status": "ERROR",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Cross-Validation",
+      "text": "import org.apache.spark.ml.Pipeline\nimport org.apache.spark.ml.classification.LogisticRegression\nimport org.apache.spark.ml.evaluation.BinaryClassificationEvaluator\nimport org.apache.spark.ml.feature.{HashingTF, Tokenizer}\nimport org.apache.spark.ml.linalg.Vector\nimport org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}\nimport org.apache.spark.sql.Row\n\n// Prepare training data from a list of (id, text, label) tuples.\nval training \u003d spark.createDataFrame(Seq(\n  (0L, \"a b c d e spark\", 1.0),\n  (1L, \"b d\", 0.0),\n  (2L, \"spark f g h\", 1.0),\n  (3L, \"hadoop mapreduce\", 0.0),\n  (4L, \"b spark who\", 1.0),\n  (5L, \"g d a y\", 0.0),\n  (6L, \"spark fly\", 1.0),\n  (7L, \"was mapreduce\", 0.0),\n  (8L, \"e spark program\", 1.0),\n  (9L, \"a e c l\", 0.0),\n  (10L, \"spark compile\", 1.0),\n  (11L, \"hadoop software\", 0.0)\n)).toDF(\"id\", \"text\", \"label\")\n\n// Configure an ML pipeline, which consists of three stages: tokenizer, hashingTF, and lr.\nval tokenizer \u003d new Tokenizer()\n  .setInputCol(\"text\")\n  .setOutputCol(\"words\")\nval hashingTF \u003d new HashingTF()\n  .setInputCol(tokenizer.getOutputCol)\n  .setOutputCol(\"features\")\nval lr \u003d new LogisticRegression()\n  .setMaxIter(10)\nval pipeline \u003d new Pipeline()\n  .setStages(Array(tokenizer, hashingTF, lr))\n\n// We use a ParamGridBuilder to construct a grid of parameters to search over.\n// With 3 values for hashingTF.numFeatures and 2 values for lr.regParam,\n// this grid will have 3 x 2 \u003d 6 parameter settings for CrossValidator to choose from.\nval paramGrid \u003d new ParamGridBuilder()\n  .addGrid(hashingTF.numFeatures, Array(10, 100, 1000))\n  .addGrid(lr.regParam, Array(0.1, 0.01))\n  .build()\n\n// We now treat the Pipeline as an Estimator, wrapping it in a CrossValidator instance.\n// This will allow us to jointly choose parameters for all Pipeline stages.\n// A CrossValidator requires an Estimator, a set of Estimator ParamMaps, and an Evaluator.\n// Note that the evaluator here is a BinaryClassificationEvaluator and its default metric\n// is areaUnderROC.\nval cv \u003d new CrossValidator()\n  .setEstimator(pipeline)\n  .setEvaluator(new BinaryClassificationEvaluator)\n  .setEstimatorParamMaps(paramGrid)\n  .setNumFolds(2)  // Use 3+ in practice\n\n// Run cross-validation, and choose the best set of parameters.\nval cvModel \u003d cv.fit(training)\n\n// Prepare test documents, which are unlabeled (id, text) tuples.\nval test \u003d spark.createDataFrame(Seq(\n  (4L, \"spark i j k\"),\n  (5L, \"l m n\"),\n  (6L, \"mapreduce spark\"),\n  (7L, \"apache hadoop\")\n)).toDF(\"id\", \"text\")\n\n// Make predictions on test documents. cvModel uses the best model found (lrModel).\ncvModel.transform(test)\n  .select(\"id\", \"text\", \"probability\", \"prediction\")\n  .collect()\n  .foreach { case Row(id: Long, text: String, prob: Vector, prediction: Double) \u003d\u003e\n    println(s\"($id, $text) --\u003e prob\u003d$prob, prediction\u003d$prediction\")\n  }",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:12:46 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.Pipeline\n\nimport org.apache.spark.ml.classification.LogisticRegression\n\nimport org.apache.spark.ml.evaluation.BinaryClassificationEvaluator\n\nimport org.apache.spark.ml.feature.{HashingTF, Tokenizer}\n\nimport org.apache.spark.ml.linalg.Vector\n\nimport org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}\n\nimport org.apache.spark.sql.Row\n\ntraining: org.apache.spark.sql.DataFrame \u003d [id: bigint, text: string ... 1 more field]\n\ntokenizer: org.apache.spark.ml.feature.Tokenizer \u003d tok_40826c2d2ec1\n\nhashingTF: org.apache.spark.ml.feature.HashingTF \u003d hashingTF_3df5a98e7787\n\nlr: org.apache.spark.ml.classification.LogisticRegression \u003d logreg_4733eb6f116f\n\npipeline: org.apache.spark.ml.Pipeline \u003d pipeline_398a04b49a8e\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nparamGrid: Array[org.apache.spark.ml.param.ParamMap] \u003d\nArray({\n\thashingTF_3df5a98e7787-numFeatures: 10,\n\tlogreg_4733eb6f116f-regParam: 0.1\n}, {\n\thashingTF_3df5a98e7787-numFeatures: 10,\n\tlogreg_4733eb6f116f-regParam: 0.01\n}, {\n\thashingTF_3df5a98e7787-numFeatures: 100,\n\tlogreg_4733eb6f116f-regParam: 0.1\n}, {\n\thashingTF_3df5a98e7787-numFeatures: 100,\n\tlogreg_4733eb6f116f-regParam: 0.01\n}, {\n\thashingTF_3df5a98e7787-numFeatures: 1000,\n\tlogreg_4733eb6f116f-regParam: 0.1\n}, {\n\thashingTF_3df5a98e7787-numFeatures: 1000,\n\tlogreg_4733eb6f116f-regParam: 0.01\n})\n\ncv: org.apache.spark.ml.tuning.CrossValidator \u003d cv_0f12f34dae69\n\ncvModel: org.apache.spark.ml.tuning.CrossValidatorModel \u003d cv_0f12f34dae69\n\ntest: org.apache.spark.sql.DataFrame \u003d [id: bigint, text: string]\n(4, spark i j k) --\u003e prob\u003d[0.12566260711357494,0.8743373928864251], prediction\u003d1.0\n(5, l m n) --\u003e prob\u003d[0.995215441016286,0.004784558983713995], prediction\u003d0.0\n(6, mapreduce spark) --\u003e prob\u003d[0.30696895232626736,0.6930310476737326], prediction\u003d1.0\n(7, apache hadoop) --\u003e prob\u003d[0.8040279442401455,0.19597205575985455], prediction\u003d0.0\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501906322787_1461330132",
+      "id": "20170805-121202_1152946999",
+      "dateCreated": "Aug 5, 2017 12:12:02 PM",
+      "dateStarted": "Aug 5, 2017 12:12:46 PM",
+      "dateFinished": "Aug 5, 2017 12:12:59 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "title": "Train-Validation Split",
+      "text": "import org.apache.spark.ml.evaluation.RegressionEvaluator\nimport org.apache.spark.ml.regression.LinearRegression\nimport org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}\n\n// Prepare training and test data.\nval data \u003d spark.read.format(\"libsvm\").load(\"/Users/sigmoidguo/Tools/spark-2.1.1-bin-hadoop2.7/data/mllib/sample_linear_regression_data.txt\")\nval Array(training, test) \u003d data.randomSplit(Array(0.9, 0.1), seed \u003d 12345)\n\nval lr \u003d new LinearRegression()\n    .setMaxIter(10)\n\n// We use a ParamGridBuilder to construct a grid of parameters to search over.\n// TrainValidationSplit will try all combinations of values and determine best model using\n// the evaluator.\nval paramGrid \u003d new ParamGridBuilder()\n  .addGrid(lr.regParam, Array(0.1, 0.01))\n  .addGrid(lr.fitIntercept)\n  .addGrid(lr.elasticNetParam, Array(0.0, 0.5, 1.0))\n  .build()\n\n// In this case the estimator is simply the linear regression.\n// A TrainValidationSplit requires an Estimator, a set of Estimator ParamMaps, and an Evaluator.\nval trainValidationSplit \u003d new TrainValidationSplit()\n  .setEstimator(lr)\n  .setEvaluator(new RegressionEvaluator)\n  .setEstimatorParamMaps(paramGrid)\n  // 80% of the data will be used for training and the remaining 20% for validation.\n  .setTrainRatio(0.8)\n\n// Run train validation split, and choose the best set of parameters.\nval model \u003d trainValidationSplit.fit(training)\n\n// Make predictions on test data. model is the model with combination of parameters\n// that performed best.\nmodel.transform(test)\n  .select(\"features\", \"label\", \"prediction\")\n  .show()",
+      "user": "anonymous",
+      "dateUpdated": "Aug 5, 2017 12:14:28 PM",
+      "config": {
+        "colWidth": 12.0,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala"
+        },
+        "editorMode": "ace/mode/scala",
+        "title": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\nimport org.apache.spark.ml.evaluation.RegressionEvaluator\n\nimport org.apache.spark.ml.regression.LinearRegression\n\nimport org.apache.spark.ml.tuning.{ParamGridBuilder, TrainValidationSplit}\n\ndata: org.apache.spark.sql.DataFrame \u003d [label: double, features: vector]\n\n\ntraining: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\ntest: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] \u003d [label: double, features: vector]\n\nlr: org.apache.spark.ml.regression.LinearRegression \u003d linReg_7cc3f80f0d0c\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nparamGrid: Array[org.apache.spark.ml.param.ParamMap] \u003d\nArray({\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.0,\n\tlinReg_7cc3f80f0d0c-fitIntercept: true,\n\tlinReg_7cc3f80f0d0c-regParam: 0.1\n}, {\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.0,\n\tlinReg_7cc3f80f0d0c-fitIntercept: true,\n\tlinReg_7cc3f80f0d0c-regParam: 0.01\n}, {\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.0,\n\tlinReg_7cc3f80f0d0c-fitIntercept: false,\n\tlinReg_7cc3f80f0d0c-regParam: 0.1\n}, {\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.0,\n\tlinReg_7cc3f80f0d0c-fitIntercept: false,\n\tlinReg_7cc3f80f0d0c-regParam: 0.01\n}, {\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.5,\n\tlinReg_7cc3f80f0d0c-fitIntercept: true,\n\tlinReg_7cc3f80f0d0c-regParam: 0.1\n}, {\n\tlinReg_7cc3f80f0d0c-elasticNetParam: 0.5,\n\tlinReg_7cc3f80f0d0c-fitIntercept: true,\n\tlinReg_7cc3f80f0d0c-regPa...\ntrainValidationSplit: org.apache.spark.ml.tuning.TrainValidationSplit \u003d tvs_b3d3d0c939bb\n\nmodel: org.apache.spark.ml.tuning.TrainValidationSplitModel \u003d tvs_b3d3d0c939bb\n+--------------------+--------------------+--------------------+\n|            features|               label|          prediction|\n+--------------------+--------------------+--------------------+\n|(10,[0,1,2,3,4,5,...|  -23.51088409032297| -1.6659388625179559|\n|(10,[0,1,2,3,4,5,...| -21.432387764165806|  0.3400877302576284|\n|(10,[0,1,2,3,4,5,...| -12.977848725392104|-0.02335359093652395|\n|(10,[0,1,2,3,4,5,...| -11.827072996392571|  2.5642684021108417|\n|(10,[0,1,2,3,4,5,...| -10.945919657782932| -0.1631314487734783|\n|(10,[0,1,2,3,4,5,...|  -10.58331129986813|   2.517790654691453|\n|(10,[0,1,2,3,4,5,...| -10.288657252388708| -0.9443474180536754|\n|(10,[0,1,2,3,4,5,...|  -8.822357870425154|  0.6872889429113783|\n|(10,[0,1,2,3,4,5,...|  -8.772667465932606|  -1.485408580416465|\n|(10,[0,1,2,3,4,5,...|  -8.605713514762092|   1.110272909026478|\n|(10,[0,1,2,3,4,5,...|  -6.544633229269576|  3.0454559778611285|\n|(10,[0,1,2,3,4,5,...|  -5.055293333055445|  0.6441174575094268|\n|(10,[0,1,2,3,4,5,...|  -5.039628433467326|  0.9572366607107066|\n|(10,[0,1,2,3,4,5,...|  -4.937258492902948|  0.2292114538379546|\n|(10,[0,1,2,3,4,5,...|  -3.741044592262687|   3.343205816009816|\n|(10,[0,1,2,3,4,5,...|  -3.731112242951253| -2.6826413698701064|\n|(10,[0,1,2,3,4,5,...|  -2.109441044710089| -2.1930034039595445|\n|(10,[0,1,2,3,4,5,...| -1.8722161156986976| 0.49547270330052423|\n|(10,[0,1,2,3,4,5,...| -1.1009750789589774| -0.9441633113006601|\n|(10,[0,1,2,3,4,5,...|-0.48115211266405217| -0.6756196573079968|\n+--------------------+--------------------+--------------------+\nonly showing top 20 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "jobName": "paragraph_1501906366395_-1710726980",
+      "id": "20170805-121246_583015482",
+      "dateCreated": "Aug 5, 2017 12:12:46 PM",
+      "dateStarted": "Aug 5, 2017 12:14:28 PM",
+      "dateFinished": "Aug 5, 2017 12:14:34 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "user": "anonymous",
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "jobName": "paragraph_1501906454195_280302606",
+      "id": "20170805-121414_233738959",
+      "dateCreated": "Aug 5, 2017 12:14:14 PM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "spark_mllib_demo",
+  "id": "2CQ7EFS3Z",
+  "angularObjects": {
+    "2CH2T8R6B:shared_process": []
+  },
+  "config": {},
+  "info": {}
+}
