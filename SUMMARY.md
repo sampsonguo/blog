@@ -15,6 +15,8 @@
   * [3.1 **异常点检测算法**](dm/异常点检测算法.md)
   * [3.2 **DensityPeaksClustering**](dm/DensityPeaksClustering.md)
   * [3.3 **LSH小结**](dm/LSH小结.md)
+* [4. **DeepLearning**]()
+  * [4.1 **DeepLearning-NG-Coursera**](DNN/DNN-NG.md)
 * [4. **数学知识**]()
   * [4.1 **积分系统的思考**](math/积分系统的思考.md)
 * [5. **平台和工具**]()

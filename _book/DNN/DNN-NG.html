@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <title>5.1 Resilient Distributed Datasets · GitBook</title>
+        <title>4.1 DeepLearning-NG-Coursera · GitBook</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="">
         <meta name="generator" content="GitBook 3.2.2">
@@ -56,8 +56,6 @@
     <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
     <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
 
-    
-    <link rel="next" href="GBDT.html" />
     
     
 
@@ -327,9 +325,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.5.1" data-path="../DNN/DNN-NG.html">
+        <li class="chapter active" data-level="1.5.1" data-path="DNN-NG.html">
             
-                <a href="../DNN/DNN-NG.html">
+                <a href="DNN-NG.html">
             
                     
                     4.1 DeepLearning-NG-Coursera
@@ -391,9 +389,9 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="1.7.1" data-path="RDD设计思路.html">
+        <li class="chapter " data-level="1.7.1" data-path="../spark/RDD设计思路.html">
             
-                <a href="RDD设计思路.html">
+                <a href="../spark/RDD设计思路.html">
             
                     
                     5.1 Resilient Distributed Datasets
@@ -404,9 +402,9 @@
             
         </li>
     
-        <li class="chapter " data-level="1.7.2" data-path="GBDT.html">
+        <li class="chapter " data-level="1.7.2" data-path="../spark/GBDT.html">
             
-                <a href="GBDT.html">
+                <a href="../spark/GBDT.html">
             
                     
                     5.2 Spark-GBDT经验
@@ -497,7 +495,7 @@
     <!-- Title -->
     <h1>
         <i class="fa fa-circle-o-notch fa-spin"></i>
-        <a href=".." >5.1 Resilient Distributed Datasets</a>
+        <a href=".." >4.1 DeepLearning-NG-Coursera</a>
     </h1>
 </div>
 
@@ -512,136 +510,45 @@
     
                                 <section class="normal markdown-section">
                                 
-                                <h5 id="motivated">Motivated</h5>
+                                <h3 id="dnn-ng">DNN-NG</h3>
+<h5 id="supervised-learning-dnn">Supervised Learning DNN</h5>
 <ul>
-<li>Iterative algorithms</li>
-<li>Interactive data mining tools</li>
+<li>Pregression &amp; Classification: Standard DNN</li>
+<li>Images: CNN</li>
+<li>Sequence (Audio) &amp; Language: RNN</li>
+<li>Driving: Custom, Hybrid</li>
 </ul>
-<h5 id="reuse-intermediate">Reuse Intermediate</h5>
+<h5 id="structure">Structure</h5>
 <ul>
-<li>Data Reuse: PageRank, K-means</li>
-<li>Interactive Data Mining: adhoc querys</li>
+<li>Structured Data: Database</li>
+<li>Unstructed Data (DNN do good): Audio, Radio, Text</li>
 </ul>
-<h5 id="between-mr-jobs">Between MR jobs</h5>
+<h5 id="why-deep-learning-taking-off">Why Deep Learning taking off</h5>
 <ul>
-<li>data replication</li>
-<li>dist I/O</li>
-<li>serialization</li>
+<li>Scale - NN size</li>
+<li>Scale - data size</li>
+<li>Algorithms - Relu</li>
+<li>Computation - Fast</li>
 </ul>
-<h5 id="frameworks">Frameworks</h5>
+<h5 id="compare">Compare</h5>
+<p><img src="../gitbook/images/dnn/2.png" alt="Local Image"></p>
+<h5 id="sigmoids-derivative">sigmoid&apos;s derivative</h5>
+<p><img src="../gitbook/images/dnn/3.png" alt="Local Image"></p>
+<h5 id="cost-function-derivative-respect-to-weight">cost function derivative respect to weight</h5>
+<p><img src="../gitbook/images/dnn/4.png" alt="Local Image"></p>
+<h5 id="activation-function">Activation Function</h5>
+<ol>
+<li>classification: sigmoid as output layer</li>
+<li>tanh is always better than sigmoid</li>
+</ol>
+<h5 id="derivative">Derivative</h5>
 <ul>
-<li>Pregel</li>
-<li>HaLoop</li>
+<li>sigmoid: sigmoid*(1-sigmoid)</li>
+<li>tanh: 1-tanh^2</li>
 </ul>
-<p>Specific Patterns, not General</p>
-<h5 id="rdds">RDDs</h5>
+<h5 id="initialize">initialize</h5>
 <ul>
-<li>fault-tolerant</li>
-<li>parallel data structure</li>
-</ul>
-<h5 id="in-memory-storage-on-clusters">In-memory storage on clusters</h5>
-<ul>
-<li>distributed shared memory</li>
-<li>key-value stores</li>
-<li>databases</li>
-</ul>
-<h5 id="challenge-fault-tolerance">Challenge: Fault Tolerance</h5>
-<ul>
-<li>Replicate the data across machines</li>
-<li>Log updates across machines</li>
-</ul>
-<p>Bandwidth is far lower than RAM</p>
-<h5 id="interface">Interface</h5>
-<ul>
-<li>Coarse-grained Transformations: map, filter, join</li>
-<li>build a dataset rather than the actual data</li>
-</ul>
-<h5 id="programming">Programming</h5>
-<ul>
-<li>MapReduce</li>
-<li>SQL</li>
-<li>Pregel</li>
-<li>HaLoop</li>
-</ul>
-<h5 id="rdd">RDD</h5>
-<ul>
-<li>features<ul>
-<li>read-only</li>
-<li>partitioned</li>
-</ul>
-</li>
-<li>create<ul>
-<li>data in stable storage</li>
-<li>other RDDs</li>
-</ul>
-</li>
-<li>transformations<ul>
-<li>map</li>
-<li>filter</li>
-<li>join</li>
-</ul>
-</li>
-<li>lineage<ul>
-<li>not materialized at all times</li>
-<li>information about how to derived from stable storage</li>
-</ul>
-</li>
-<li>control<ul>
-<li>persistence</li>
-<li>partitioning<ul>
-<li>join: hash-partitioned in the same way</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Programming<ul>
-<li>transformations: map, filter</li>
-<li>actions: count, collect</li>
-<li>save</li>
-<li>persist</li>
-</ul>
-</li>
-</ul>
-<h5 id="advantages">Advantages</h5>
-<ul>
-<li>backup tasks</li>
-<li>data locality</li>
-<li>degrade</li>
-</ul>
-<h5 id="app-not-suitable">App Not Suitable</h5>
-<ul>
-<li>Best Suit: batch app, same operation to all elements</li>
-<li>Not Suit: asynchronous fine-grained updates</li>
-</ul>
-<h5 id="rdd-operations">RDD Operations</h5>
-<ul>
-<li>Transformations and Actions</li>
-<li>map: one to one</li>
-<li>flatMap: one to more</li>
-<li>groupByKey</li>
-<li>reduceByKey</li>
-<li>sort</li>
-</ul>
-<h5 id="dependencies">dependencies</h5>
-<ul>
-<li>narrow: map, pipline like, failure -&gt; lost parents to be recomputed</li>
-<li>wide: join, mapreduce like, failure -&gt; all ancestors to be recomputed</li>
-</ul>
-<p><img src="../gitbook/images/RDD/1.png" alt="Local Image"><br>
-<img src="../gitbook/images/RDD/2.png" alt="Local Image"><br></p>
-<h5 id="memory-management">Memory Management</h5>
-<ul>
-<li>LRU</li>
-</ul>
-<h5 id="checkpoint">Checkpoint</h5>
-<ul>
-<li>api</li>
-<li>auto</li>
-</ul>
-<h5 id="ref">REF</h5>
-<ul>
-<li>Resilient Distributed Datasets: A Fault-Tolerant Abstraction for
-In-Memory Cluster Computing<br></li>
+<li>all the hidden layer node will be the same</li>
 </ul>
 
                                 
@@ -671,10 +578,6 @@ In-Memory Cluster Computing<br></li>
             
                 
                 
-                <a href="GBDT.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 5.2 Spark-GBDT经验">
-                    <i class="fa fa-angle-right"></i>
-                </a>
-                
             
         
     </div>
@@ -682,7 +585,7 @@ In-Memory Cluster Computing<br></li>
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"5.1 Resilient Distributed Datasets","level":"1.7.1","depth":2,"next":{"title":"5.2 Spark-GBDT经验","level":"1.7.2","depth":2,"path":"spark/GBDT.md","ref":"spark/GBDT.md","articles":[]},"previous":{"title":"5. 平台和工具","level":"1.7","depth":1,"ref":"","articles":[{"title":"5.1 Resilient Distributed Datasets","level":"1.7.1","depth":2,"path":"spark/RDD设计思路.md","ref":"spark/RDD设计思路.md","articles":[]},{"title":"5.2 Spark-GBDT经验","level":"1.7.2","depth":2,"path":"spark/GBDT.md","ref":"spark/GBDT.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"spark/RDD设计思路.md","mtime":"2017-07-19T02:18:17.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-18T03:56:44.986Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"4.1 DeepLearning-NG-Coursera","level":"1.5.1","depth":2,"next":{"title":"4. 数学知识","level":"1.6","depth":1,"ref":"","articles":[{"title":"4.1 积分系统的思考","level":"1.6.1","depth":2,"path":"math/积分系统的思考.md","ref":"math/积分系统的思考.md","articles":[]}]},"previous":{"title":"4. DeepLearning","level":"1.5","depth":1,"ref":"","articles":[{"title":"4.1 DeepLearning-NG-Coursera","level":"1.5.1","depth":2,"path":"DNN/DNN-NG.md","ref":"DNN/DNN-NG.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["mathjax"],"pluginsConfig":{"mathjax":{"forceSVG":false,"version":"2.6-latest"},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"DNN/DNN-NG.md","mtime":"2017-08-18T03:56:19.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-18T03:56:44.986Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
